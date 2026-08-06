@@ -2,8 +2,8 @@ import sqlite3
 from pathlib import Path
 
 import pytest
-import udap_connectors  # noqa: F401  (registers built-in connectors)
-from udap_core.models import (
+import tabella_connectors  # noqa: F401  (registers built-in connectors)
+from tabella_core.models import (
     AssetMeta,
     Contract,
     ContractField,
@@ -44,7 +44,7 @@ ROWS = {
 
 @pytest.fixture
 def demo_db(tmp_path: Path) -> str:
-    """Create a demo sqlite db; returns its UDAP source URI."""
+    """Create a demo sqlite db; returns its Tabella source URI."""
     db = tmp_path / "retail.db"
     with sqlite3.connect(db) as conn:
         conn.executescript(DDL)

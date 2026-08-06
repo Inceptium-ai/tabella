@@ -1,7 +1,7 @@
-# UDAP Access Layer Contract — v0.1.0
+# Tabella Access Layer Contract — v0.1.0
 
-Every access layer generated from a UDAP catalog follows the same conventions,
-so a consumer (human or agent) that can use one UDAP API can use them all.
+Every access layer generated from a Tabella catalog follows the same conventions,
+so a consumer (human or agent) that can use one Tabella API can use them all.
 Only assets with `enablement.api: true` are served.
 
 ## Endpoints

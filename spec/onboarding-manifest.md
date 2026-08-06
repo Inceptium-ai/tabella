@@ -1,14 +1,14 @@
-# UDAP Onboarding Manifest — v0.1.0
+# Tabella Onboarding Manifest — v0.1.0
 
-The Onboarding Manifest is how an asset enters UDAP. It is the machine form of
+The Onboarding Manifest is how an asset enters Tabella. It is the machine form of
 the "data onboarding form": the asset's owner (or an automated discovery run)
 declares what the asset is, where it lives, how it's classified and governed,
 and which AI-enablement artifacts it should get.
 
-- **YAML** is the human entry format (`udap register onboarding.yaml`).
+- **YAML** is the human entry format (`tabella register onboarding.yaml`).
 - **JSON** is the API/form format — an onboarding portal submits the exact
   same schema as JSON.
-- `udap discover <uri>` emits **draft manifests** for review; discovery never
+- `tabella discover <uri>` emits **draft manifests** for review; discovery never
   bypasses the manifest. Registration is always manifest-driven.
 
 Normative schema: [`schemas/onboarding-manifest.schema.json`](schemas/onboarding-manifest.schema.json).
@@ -16,7 +16,7 @@ Normative schema: [`schemas/onboarding-manifest.schema.json`](schemas/onboarding
 ## Example
 
 ```yaml
-udap_version: 0.1.0
+tabella_version: 0.1.0
 asset:
   name: customers
   description: Customer master records for the retail business
@@ -104,7 +104,7 @@ String-keyed map propagated to the catalog backend as custom properties
 
 ## Registration semantics
 
-`udap register <manifest>`:
+`tabella register <manifest>`:
 
 1. Validate the manifest against the JSON Schema.
 2. Introspect the source via the connector; verify the `contract`.

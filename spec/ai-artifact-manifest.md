@@ -1,6 +1,6 @@
-# UDAP AI Artifact Manifests — v0.1.0
+# Tabella AI Artifact Manifests — v0.1.0
 
-UDAP's enablement layer turns registered assets into artifacts AI systems can
+Tabella's enablement layer turns registered assets into artifacts AI systems can
 consume directly. Two artifact types are specified in v0.1:
 
 1. **Tool manifest** (`tools.json`) — datasets as agent tools (MCP-aligned)
@@ -19,12 +19,12 @@ JSON-Schema input contract — the same shape used by the Model Context Protocol
 executes it.
 
 ```bash
-udap tools catalog/ -o tools.json
+tabella tools catalog/ -o tools.json
 ```
 
 ```json
 {
-  "udap_version": "0.1.0",
+  "tabella_version": "0.1.0",
   "tools": [
     {
       "name": "query_sales_customers",
@@ -70,14 +70,14 @@ citation back to the source asset.
 
 ```json
 {
-  "udap_version": "0.1.0",
+  "tabella_version": "0.1.0",
   "indexes": [
     {
       "asset": "support.tickets",
       "content_fields": ["subject", "body"],
       "chunking": {"strategy": "semantic", "chunk_size": 512},
       "embedding": {"model": "text-embedding-3-small", "dimensions": 1536},
-      "store": {"backend": "pgvector", "collection": "udap_support_tickets"},
+      "store": {"backend": "pgvector", "collection": "tabella_support_tickets"},
       "metadata_fields": ["id", "created_at"],
       "search_endpoint": {"method": "POST", "path": "/assets/support.tickets/search"}
     }
@@ -95,6 +95,6 @@ citation back to the source asset.
 - Re-running vectorization for an asset MUST replace its collection
   idempotently (registration is an update, and so is enablement).
 
-The executable pipeline behind this manifest (`udap vectorize`) ships in M2;
+The executable pipeline behind this manifest (`tabella vectorize`) ships in M2;
 the manifest shape is specified now so catalog and platform layers can build
 against it.

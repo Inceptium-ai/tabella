@@ -1,8 +1,8 @@
 import pytest
 from fastapi.testclient import TestClient
-from udap_core.pipeline import register
-from udap_core.store import load_catalog
-from udap_enable.rest import build_app
+from tabella_core.pipeline import register
+from tabella_core.store import load_catalog
+from tabella_enable.rest import build_app
 
 
 @pytest.fixture

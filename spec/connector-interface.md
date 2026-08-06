@@ -1,7 +1,7 @@
-# UDAP Connector Interface — v0.1.0
+# Tabella Connector Interface — v0.1.0
 
 A **connector** binds a class of physical sources (SQLite, Postgres, S3/files,
-a SaaS API…) to UDAP. Connectors have three responsibilities:
+a SaaS API…) to Tabella. Connectors have three responsibilities:
 
 1. **Enumerate** — list the assets available at a source URI.
 2. **Introspect** — extract one asset's logical schema in canonical types.
@@ -56,7 +56,7 @@ primitives — connectors never produce manifests or descriptors themselves.
 ## Registration
 
 ```python
-from udap_core.connectors import Connector, register
+from tabella_core.connectors import Connector, register
 
 @register
 class PostgresConnector(Connector):
@@ -64,5 +64,5 @@ class PostgresConnector(Connector):
     ...
 ```
 
-Third-party packages may expose connectors via the `udap.connectors`
+Third-party packages may expose connectors via the `tabella.connectors`
 entry-point group; the CLI loads them automatically.

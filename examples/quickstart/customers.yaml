@@ -1,4 +1,4 @@
-udap_version: 0.1.0
+tabella_version: 0.1.0
 asset:
   name: customers
   description: Customer master records for the retail demo business

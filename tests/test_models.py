@@ -3,8 +3,8 @@ from pathlib import Path
 
 import jsonschema
 import yaml
-from udap_core.manifest import dump_manifest_yaml, load_manifest
-from udap_core.models import AssetDescriptor, OnboardingManifest
+from tabella_core.manifest import dump_manifest_yaml, load_manifest
+from tabella_core.models import AssetDescriptor, OnboardingManifest
 
 SCHEMAS = Path(__file__).parent.parent / "spec" / "schemas"
 
@@ -31,7 +31,7 @@ def test_manifest_validates_against_spec_schema(customers_manifest):
 def test_manifest_defaults():
     data = yaml.safe_load(
         """
-        udap_version: 0.1.0
+        tabella_version: 0.1.0
         asset: {name: Events Log, domain: Platform Ops}
         source: {connector: sqlite, uri: sqlite:///x.db, native_name: events}
         """
@@ -44,7 +44,7 @@ def test_manifest_defaults():
 
 
 def test_descriptor_schema_alias_round_trip(customers_manifest, demo_db):
-    from udap_core.connectors import get_connector
+    from tabella_core.connectors import get_connector
 
     schema = get_connector("sqlite").introspect(demo_db, "customers")
     descriptor = AssetDescriptor(

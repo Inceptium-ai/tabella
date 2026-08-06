@@ -1,7 +1,7 @@
-# UDAP Asset Descriptor — v0.1.0
+# Tabella Asset Descriptor — v0.1.0
 
 The Asset Descriptor is the cataloged record of a registered asset: the merge
-of what the owner declared (Onboarding Manifest) with what UDAP introspected
+of what the owner declared (Onboarding Manifest) with what Tabella introspected
 from the source (schema, types). Every downstream artifact — catalog entries,
 governance grants, generated APIs, MCP tools, RAG indexes — is derived from
 descriptors and is regenerable from them.
@@ -15,7 +15,7 @@ Normative schema: [`schemas/asset-descriptor.schema.json`](schemas/asset-descrip
 
 ```json
 {
-  "udap_version": "0.1.0",
+  "tabella_version": "0.1.0",
   "id": "sales.customers",
   "name": "customers",
   "description": "Customer master records for the retail business",
@@ -44,7 +44,7 @@ Normative schema: [`schemas/asset-descriptor.schema.json`](schemas/asset-descrip
 
 | Field | Type | Req | Notes |
 |---|---|---|---|
-| `udap_version` | string | ✓ | Spec version (semver) |
+| `tabella_version` | string | ✓ | Spec version (semver) |
 | `id` | string | ✓ | `<domain>.<name>` slugged, `[a-z0-9_.-]+`; stable across re-registration |
 | `name` | string | ✓ | Asset name |
 | `description` | string \| null | | AI-enriched when absent |

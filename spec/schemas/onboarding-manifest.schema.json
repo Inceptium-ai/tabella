@@ -1,11 +1,11 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://udap.dev/schemas/0.1.0/onboarding-manifest.schema.json",
-  "title": "UDAP Onboarding Manifest",
+  "$id": "https://tabella.dev/schemas/0.1.0/onboarding-manifest.schema.json",
+  "title": "Tabella Onboarding Manifest",
   "type": "object",
-  "required": ["udap_version", "asset", "source"],
+  "required": ["tabella_version", "asset", "source"],
   "properties": {
-    "udap_version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$"},
+    "tabella_version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$"},
     "asset": {
       "type": "object",
       "required": ["name", "domain", "classification"],

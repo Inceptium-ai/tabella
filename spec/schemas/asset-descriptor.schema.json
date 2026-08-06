@@ -1,11 +1,11 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://udap.dev/schemas/0.1.0/asset-descriptor.schema.json",
-  "title": "UDAP Asset Descriptor",
+  "$id": "https://tabella.dev/schemas/0.1.0/asset-descriptor.schema.json",
+  "title": "Tabella Asset Descriptor",
   "type": "object",
-  "required": ["udap_version", "id", "name", "domain", "classification", "source", "schema"],
+  "required": ["tabella_version", "id", "name", "domain", "classification", "source", "schema"],
   "properties": {
-    "udap_version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$"},
+    "tabella_version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$"},
     "id": {"type": "string", "pattern": "^[a-z0-9_.-]+$"},
     "name": {"type": "string", "minLength": 1},
     "description": {"type": ["string", "null"]},

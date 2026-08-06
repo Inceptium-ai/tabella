@@ -6,4 +6,4 @@ A docker-compose stack for local end-to-end development:
 - **PostgreSQL** — a real source to register (with pgvector for M2 RAG)
 - **MinIO** — S3-compatible object storage for the files connector
 
-`udap init` will bootstrap this stack and point the CLI at it. Lands in M1.
+`tabella init` will bootstrap this stack and point the CLI at it. Lands in M1.

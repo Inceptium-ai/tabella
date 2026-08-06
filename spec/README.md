@@ -1,8 +1,8 @@
-# The UDAP Standards
+# The Tabella Standards
 
-UDAP's value comes from a small set of stable contracts. Any tool that
+Tabella's value comes from a small set of stable contracts. Any tool that
 produces or consumes these artifacts interoperates with any other — including
-the commercial UDAP Platform, which is built on exactly these specs.
+the commercial Tabella Platform, which is built on exactly these specs.
 
 | # | Spec | Artifact |
 |---|---|---|
@@ -36,5 +36,5 @@ Onboarding Manifest ──register──► Asset Descriptor ──generate─�
 
 ## Versioning
 
-Specs are versioned together as `udap_version` (currently `0.1.0`, semver).
+Specs are versioned together as `tabella_version` (currently `0.1.0`, semver).
 Breaking changes bump the minor version pre-1.0 and the major version after.

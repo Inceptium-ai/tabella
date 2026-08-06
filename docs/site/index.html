@@ -1,4 +1,4 @@
-<title>UDAP — Unified Data Access Platform</title>
+<title>Tabella — Enterprise Data, AI-Ready</title>
 <style>
   :root {
     --bg: #0F0F0F;
@@ -350,7 +350,7 @@
 
 <nav>
   <div class="wrap nav-inner">
-    <a class="wordmark" href="#top">UDAP<span class="dot">.</span> <small>working name</small></a>
+    <a class="wordmark" href="#top">Tabella<span class="dot">.</span></a>
     <div class="nav-links">
       <a href="#capabilities">Capabilities</a>
       <a href="#methodology">How it works</a>
@@ -363,10 +363,10 @@
 
 <header class="hero" id="top">
   <div class="wrap">
-    <span class="eyebrow"><b>UDAP</b> Unified Data Access Platform</span>
+    <span class="eyebrow"><b>Tabella</b> makes enterprise data AI-ready</span>
     <h1>Every data asset in your enterprise, <span class="grad">cataloged, governed, and AI&#8209;ready.</span></h1>
     <p class="lede">
-      Send an onboarding form to every data owner. UDAP registers each asset into your catalog,
+      Send an onboarding form to every data owner. Tabella registers each asset into your catalog,
       verifies its contract against the live source, applies governance — and automatically generates
       the AI enablement layer: standardized APIs, MCP tools, and RAG indexes. One pipeline, end to end.
     </p>
@@ -375,7 +375,7 @@
       <a class="btn btn-ghost" href="#methodology">See how it works</a>
     </div>
 
-    <div class="pipeline" aria-label="The UDAP pipeline">
+    <div class="pipeline" aria-label="The Tabella pipeline">
       <div class="stage"><div class="chip"><div class="k">Onboard</div><div class="v">manifest or form, discovery drafts</div></div></div>
       <div class="arrow">→</div>
       <div class="stage"><div class="chip"><div class="k">Catalog</div><div class="v">OpenMetadata: tags, domains, contracts</div></div></div>
@@ -397,7 +397,7 @@
     <h2>The data management layer that AI use cases stand on</h2>
     <p class="sec-lede">
       Every AI initiative stalls on the same questions: what data exists, who owns it, can we use it,
-      how do we access it? UDAP answers them once, automatically, for every asset.
+      how do we access it? Tabella answers them once, automatically, for every asset.
     </p>
     <div class="grid">
       <div class="card">
@@ -407,7 +407,7 @@
       </div>
       <div class="card">
         <h3><span class="glyph">02</span> Automated discovery</h3>
-        <p><span class="inline-code">udap discover</span> crawls a source and drafts a manifest per asset it finds — for
+        <p><span class="inline-code">tabella discover</span> crawls a source and drafts a manifest per asset it finds — for
         human review, never silently into the catalog. Registration stays accountable to an owner.</p>
       </div>
       <div class="card">
@@ -423,7 +423,7 @@
       <div class="card">
         <h3><span class="glyph">05</span> Generated access layers</h3>
         <p>Every asset gets a standardized REST API — one contract for envelopes, pagination, filtering, and errors
-        across every source. Learn one UDAP API and you have learned them all.</p>
+        across every source. Learn one Tabella API and you have learned them all.</p>
       </div>
       <div class="card">
         <h3><span class="glyph">06</span> AI enablement</h3>
@@ -452,8 +452,8 @@
       </div>
       <div class="num">02</div>
       <div class="step">
-        <h3>Introspect &amp; verify <span class="who">udap register</span></h3>
-        <p>UDAP connects to the source, extracts the schema in canonical types, and verifies the declared contract
+        <h3>Introspect &amp; verify <span class="who">tabella register</span></h3>
+        <p>Tabella connects to the source, extracts the schema in canonical types, and verifies the declared contract
         against reality. Violations stop the pipeline with a precise report; PII markings flow into the schema.</p>
       </div>
       <div class="num">03</div>
@@ -505,17 +505,17 @@
       </div>
       <div class="codeblock">
         <div class="bar">terminal — the whole journey, four commands</div>
-        <pre><span class="tok-c">$</span> udap register onboarding.yaml
+        <pre><span class="tok-c">$</span> tabella register onboarding.yaml
 <span class="tok-g">registered sales.customers → catalog/sales.customers.json</span>
 
-<span class="tok-c">$</span> udap discover postgres://analytics-db:5432/retail
+<span class="tok-c">$</span> tabella discover postgres://analytics-db:5432/retail
 <span class="tok-g">drafted 14 manifest(s) → manifests/</span> <span class="tok-c">review, then register</span>
 
-<span class="tok-c">$</span> udap serve catalog/
+<span class="tok-c">$</span> tabella serve catalog/
 <span class="tok-g">serving 14 asset(s) on http://127.0.0.1:8400</span>
 <span class="tok-c">  GET /assets/sales.customers/records?country=DE</span>
 
-<span class="tok-c">$</span> udap tools catalog/ -o tools.json
+<span class="tok-c">$</span> tabella tools catalog/ -o tools.json
 <span class="tok-g">wrote tools.json (14 tools)</span> <span class="tok-c">MCP-aligned, PII filtered out</span></pre>
       </div>
     </div>
@@ -534,7 +534,7 @@
 
     <div class="arch">
       <div class="arch-layer commercial">
-        <div class="arch-head"><h3>UDAP Platform</h3><span class="tag pink">Commercial</span></div>
+        <div class="arch-head"><h3>Tabella Platform</h3><span class="tag pink">Commercial</span></div>
         <div class="arch-items">
           <span>onboarding portal</span><span>orchestration &amp; scheduling</span><span>approval workflows</span>
           <span>drift detection</span><span>governance dashboards</span><span>utilization metrics</span>
@@ -542,11 +542,11 @@
         </div>
       </div>
       <div class="arch-layer oss">
-        <div class="arch-head"><h3>UDAP Framework</h3><span class="tag blue">Open source · Apache-2.0</span></div>
+        <div class="arch-head"><h3>Tabella Framework</h3><span class="tag blue">Open source · Apache-2.0</span></div>
         <div class="arch-items">
-          <span>spec/ — 5 standards + JSON Schemas</span><span>udap-core — pipeline &amp; models</span>
-          <span>udap-connectors</span><span>udap-catalog-om</span><span>udap-governance-aws</span>
-          <span>udap-enable — API · MCP · RAG</span><span>udap-cli</span><span>deploy/ — sandbox &amp; AWS Terraform</span>
+          <span>spec/ — 5 standards + JSON Schemas</span><span>tabella-core — pipeline &amp; models</span>
+          <span>tabella-connectors</span><span>tabella-catalog-om</span><span>tabella-governance-aws</span>
+          <span>tabella-enable — API · MCP · RAG</span><span>tabella-cli</span><span>deploy/ — sandbox &amp; AWS Terraform</span>
         </div>
       </div>
       <div class="arch-layer sources">
@@ -580,12 +580,12 @@
     </div>
 
     <div class="frame">
-      <div class="frame-bar"><div class="dots"><i></i><i></i><i></i></div><div class="url">console.udap.internal / acme-corp</div></div>
+      <div class="frame-bar"><div class="dots"><i></i><i></i><i></i></div><div class="url">console.tabella.internal / acme-corp</div></div>
 
       <!-- CATALOG -->
       <div class="screen active" id="s-catalog">
         <div class="side">
-          <div class="brand">UDAP<span style="color:var(--primary)">.</span></div>
+          <div class="brand">Tabella<span style="color:var(--primary)">.</span></div>
           <a class="on" href="#console"><span class="ico">◈</span>Catalog</a>
           <a href="#console"><span class="ico">✚</span>Onboarding</a>
           <a href="#console"><span class="ico">⛨</span>Governance</a>
@@ -621,7 +621,7 @@
       <!-- ASSET DETAIL -->
       <div class="screen" id="s-asset">
         <div class="side">
-          <div class="brand">UDAP<span style="color:var(--primary)">.</span></div>
+          <div class="brand">Tabella<span style="color:var(--primary)">.</span></div>
           <a class="on" href="#console"><span class="ico">◈</span>Catalog</a>
           <a href="#console"><span class="ico">✚</span>Onboarding</a>
           <a href="#console"><span class="ico">⛨</span>Governance</a>
@@ -677,7 +677,7 @@
       <!-- ONBOARDING -->
       <div class="screen" id="s-onboard">
         <div class="side">
-          <div class="brand">UDAP<span style="color:var(--primary)">.</span></div>
+          <div class="brand">Tabella<span style="color:var(--primary)">.</span></div>
           <a href="#console"><span class="ico">◈</span>Catalog</a>
           <a class="on" href="#console"><span class="ico">✚</span>Onboarding</a>
           <a href="#console"><span class="ico">⛨</span>Governance</a>
@@ -710,7 +710,7 @@
             <div class="codeblock" style="align-self:start">
               <div class="bar">live preview — submitted to the registration pipeline</div>
               <pre>{
-  <span class="tok-k">"udap_version"</span>: <span class="tok-s">"0.1.0"</span>,
+  <span class="tok-k">"tabella_version"</span>: <span class="tok-s">"0.1.0"</span>,
   <span class="tok-k">"asset"</span>: {
     <span class="tok-k">"name"</span>: <span class="tok-s">"customers"</span>,
     <span class="tok-k">"domain"</span>: <span class="tok-s">"sales"</span>,
@@ -732,7 +732,7 @@
       <!-- GOVERNANCE -->
       <div class="screen" id="s-gov">
         <div class="side">
-          <div class="brand">UDAP<span style="color:var(--primary)">.</span></div>
+          <div class="brand">Tabella<span style="color:var(--primary)">.</span></div>
           <a href="#console"><span class="ico">◈</span>Catalog</a>
           <a href="#console"><span class="ico">✚</span>Onboarding</a>
           <a class="on" href="#console"><span class="ico">⛨</span>Governance</a>
@@ -783,7 +783,7 @@
     </p>
     <div class="split">
       <div class="col oss">
-        <h3>UDAP Framework</h3>
+        <h3>Tabella Framework</h3>
         <div class="sub">Open source · Apache-2.0</div>
         <ul>
           <li>The five specs + JSON Schemas — manifests, descriptors, contracts, tools</li>
@@ -791,11 +791,11 @@
           <li>Registration pipeline with contract verification &amp; PII propagation</li>
           <li>OpenMetadata + AWS Glue/Lake Formation backend adapters</li>
           <li>Generators: REST access layers, MCP tools, RAG indexes</li>
-          <li>The <code class="inline-code">udap</code> CLI, local sandbox, AWS reference Terraform</li>
+          <li>The <code class="inline-code">tabella</code> CLI, local sandbox, AWS reference Terraform</li>
         </ul>
       </div>
       <div class="col com">
-        <h3>UDAP Platform</h3>
+        <h3>Tabella Platform</h3>
         <div class="sub">Commercial · runs on the open framework</div>
         <ul>
           <li>Onboarding portal — the form UI that emits spec-compliant manifests</li>
@@ -815,17 +815,17 @@
     <h2>Where the build is</h2>
     <div class="miles">
       <div class="mile done"><div class="m">M0 <span>✓ done</span></div><h4>Specs &amp; pipeline</h4><p>Standards v0.1, registration with contract verification, SQLite connector, REST + MCP generators, CLI.</p></div>
-      <div class="mile"><div class="m">M1</div><h4>Catalog e2e</h4><p>OpenMetadata backend, sandbox stack, PostgreSQL + S3/files connectors, <span style="font-family:var(--mono)">udap init</span>.</p></div>
+      <div class="mile"><div class="m">M1</div><h4>Catalog e2e</h4><p>OpenMetadata backend, sandbox stack, PostgreSQL + S3/files connectors, <span style="font-family:var(--mono)">tabella init</span>.</p></div>
       <div class="mile"><div class="m">M2</div><h4>AI enablement</h4><p>RAG vectorization to pgvector, live MCP server, semantic search endpoints.</p></div>
       <div class="mile"><div class="m">M3</div><h4>AWS reference</h4><p>Terraform deployment, Glue + Lake Formation governance backend.</p></div>
-      <div class="mile"><div class="m">M4</div><h4>Launch</h4><p>Docs site, public product name, platform build begins.</p></div>
+      <div class="mile"><div class="m">M4</div><h4>Launch</h4><p>Docs site, trademark &amp; domain clearance, platform build begins.</p></div>
     </div>
   </div>
 </section>
 
 <footer>
   <div class="wrap">
-    <span>UDAP — working name; renames before public launch. Framework: Apache-2.0.</span>
+    <span>Tabella — from <em>tabula</em>, a tablet of records. Framework: Apache-2.0.</span>
     <span>Concept mockups — console screens are illustrative.</span>
   </div>
 </footer>

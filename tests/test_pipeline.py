@@ -3,8 +3,8 @@ from pathlib import Path
 
 import jsonschema
 import pytest
-from udap_core.models import ContractField, FieldType
-from udap_core.pipeline import ContractViolation, discover, register
+from tabella_core.models import ContractField, FieldType
+from tabella_core.pipeline import ContractViolation, discover, register
 
 SCHEMAS = Path(__file__).parent.parent / "spec" / "schemas"
 

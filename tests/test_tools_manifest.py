@@ -1,7 +1,7 @@
 import jsonschema
-from udap_core.models import Classification
-from udap_core.pipeline import register
-from udap_enable.tools import build_manifest
+from tabella_core.models import Classification
+from tabella_core.pipeline import register
+from tabella_enable.tools import build_manifest
 
 
 def _descriptor(tmp_path, manifest):
