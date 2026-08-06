@@ -54,6 +54,7 @@ Normative schema: [`schemas/asset-descriptor.schema.json`](schemas/asset-descrip
 | `classification` | enum | ✓ | `public` \| `internal` \| `confidential` \| `restricted` |
 | `source` | object | ✓ | `connector`, `uri`, `native_name` |
 | `schema` | object | ✓ | Introspected logical schema (below) |
+| `contract` | object | | The verified contract from the manifest, carried for catalog publication (same shape as the manifest's `contract`) |
 | `access` | object | | `read_roles`, `row_limit` |
 | `enablement` | object | | `api`, `mcp`, `vectorization` profile |
 | `custom_properties` | object | | String map, propagated to catalog backends |

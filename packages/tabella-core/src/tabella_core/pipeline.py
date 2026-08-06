@@ -94,6 +94,7 @@ def register(
         classification=manifest.asset.classification,
         source=manifest.source,
         schema=schema,
+        contract=manifest.contract,
         access=manifest.access,
         enablement=manifest.enablement,
         custom_properties=manifest.custom_properties,

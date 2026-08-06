@@ -16,11 +16,29 @@ from tabella_core.pipeline import discover, register
 from tabella_core.store import load_catalog
 
 
+def _catalog_backends(names: list[str]):
+    backends = []
+    for name in names:
+        if name == "openmetadata":
+            from tabella_catalog_om import OpenMetadataCatalog
+
+            backends.append(OpenMetadataCatalog())
+        else:
+            raise ValueError(f"Unknown catalog backend: {name}")
+    return backends
+
+
 def _cmd_register(args: argparse.Namespace) -> int:
+    backends = _catalog_backends(args.backend or [])
     for path in args.manifests:
         manifest = load_manifest(path)
-        result = register(manifest, args.catalog)
-        print(f"registered {result.descriptor.id} -> {result.descriptor_path}")
+        result = register(manifest, args.catalog, catalog_backends=backends)
+        mirrored = (
+            f" (mirrored to: {', '.join(result.catalog_backends)})"
+            if result.catalog_backends
+            else ""
+        )
+        print(f"registered {result.descriptor.id} -> {result.descriptor_path}{mirrored}")
     return 0
 
 
@@ -79,6 +97,13 @@ def main(argv: list[str] | None = None) -> int:
     p = sub.add_parser("register", help="Register asset(s) from onboarding manifest(s)")
     p.add_argument("manifests", nargs="+", help="Manifest file(s), .yaml or .json")
     p.add_argument("-c", "--catalog", default="catalog", help="Catalog dir (default: catalog)")
+    p.add_argument(
+        "--backend",
+        action="append",
+        choices=["openmetadata"],
+        help="Also mirror into a catalog backend (repeatable). openmetadata reads"
+        " TABELLA_OM_HOST / TABELLA_OM_TOKEN",
+    )
     p.set_defaults(func=_cmd_register)
 
     p = sub.add_parser("discover", help="Draft onboarding manifests for assets found at a source")

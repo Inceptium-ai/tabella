@@ -57,6 +57,24 @@
         }
       }
     },
+    "contract": {
+      "type": "object",
+      "properties": {
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {"type": "string", "minLength": 1},
+              "type": {"enum": ["string", "integer", "number", "boolean", "date", "datetime", "json", "binary", "unknown", null]},
+              "required": {"type": "boolean"},
+              "pii": {"type": "boolean"}
+            }
+          }
+        }
+      }
+    },
     "access": {
       "type": "object",
       "properties": {

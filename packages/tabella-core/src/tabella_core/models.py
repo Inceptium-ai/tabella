@@ -147,6 +147,7 @@ class AssetDescriptor(BaseModel):
     classification: Classification = Classification.internal
     source: SourceRef
     asset_schema: AssetSchema = Field(alias="schema")
+    contract: Contract = Field(default_factory=Contract)
     access: AccessPolicy = Field(default_factory=AccessPolicy)
     enablement: EnablementProfile = Field(default_factory=EnablementProfile)
     custom_properties: dict[str, str] = Field(default_factory=dict)

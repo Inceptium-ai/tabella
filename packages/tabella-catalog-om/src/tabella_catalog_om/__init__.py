@@ -1,21 +1,12 @@
-"""tabella-catalog-om: OpenMetadata catalog backend (lands in M1).
+"""tabella-catalog-om: OpenMetadata catalog backend.
 
-Will implement `tabella_core.interfaces.CatalogBackend`: entity upsert, tag and
-domain assignment, custom properties, contract publication, and ingest
-pipeline triggering against the OpenMetadata API.
+Mirrors Asset Descriptors into OpenMetadata: entity hierarchy, tags, domain,
+custom properties, and data contracts. Configure via TABELLA_OM_HOST and
+TABELLA_OM_TOKEN. Built against vendored OM 1.12.x API schemas (reference/);
+live-server validation lands with deploy/sandbox.
 """
 
-from tabella_core.interfaces import CatalogBackend
-from tabella_core.models import AssetDescriptor
+from tabella_catalog_om.backend import OpenMetadataCatalog
+from tabella_catalog_om.client import OpenMetadataClient, OpenMetadataError
 
-
-class OpenMetadataCatalog(CatalogBackend):
-    name = "openmetadata"
-
-    def __init__(self, host: str | None = None):
-        self.host = host
-
-    def upsert_asset(self, descriptor: AssetDescriptor) -> None:
-        raise NotImplementedError(
-            "OpenMetadata backend lands in M1 (sandbox: deploy/sandbox)"
-        )
+__all__ = ["OpenMetadataCatalog", "OpenMetadataClient", "OpenMetadataError"]

@@ -9,6 +9,7 @@ authors = [{ name = "Yazdan Ahmed" }]
 dependencies = [
     "tabella-core",
     "tabella-connectors",
+    "tabella-catalog-om",
     "tabella-enable",
     "uvicorn>=0.30",
 ]
@@ -19,6 +20,7 @@ tabella = "tabella_cli.cli:main"
 [tool.uv.sources]
 tabella-core = { workspace = true }
 tabella-connectors = { workspace = true }
+tabella-catalog-om = { workspace = true }
 tabella-enable = { workspace = true }
 
 [build-system]
