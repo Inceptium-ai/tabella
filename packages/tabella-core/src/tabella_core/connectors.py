@@ -16,6 +16,7 @@ class FetchResult(NamedTuple):
 
 class Connector(ABC):
     scheme: ClassVar[str]
+    aliases: ClassVar[tuple[str, ...]] = ()
 
     @abstractmethod
     def list_assets(self, uri: str) -> list[str]: ...
@@ -39,6 +40,8 @@ _REGISTRY: dict[str, type[Connector]] = {}
 
 def register(cls: type[Connector]) -> type[Connector]:
     _REGISTRY[cls.scheme] = cls
+    for alias in cls.aliases:
+        _REGISTRY[alias] = cls
     return cls
 
 

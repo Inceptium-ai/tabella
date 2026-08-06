@@ -1,12 +1,16 @@
 [project]
 name = "tabella-connectors"
 version = "0.1.0"
-description = "Built-in Tabella connectors (sqlite; postgres and s3/files in M1)"
+description = "Built-in Tabella connectors: sqlite, postgres, files/s3 (csv + parquet)"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
 authors = [{ name = "Yazdan Ahmed" }]
-dependencies = ["tabella-core"]
+dependencies = [
+    "tabella-core",
+    "psycopg[binary]>=3.2",
+    "pyarrow>=17",
+]
 
 [tool.uv.sources]
 tabella-core = { workspace = true }

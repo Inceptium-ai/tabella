@@ -88,7 +88,7 @@ Everything interoperates through five small specs in [`spec/`](spec/):
 spec/                  The open standards + JSON Schemas
 packages/
   tabella-core/           Spec models, connector SDK, backend interfaces, registration pipeline
-  tabella-connectors/     Built-in connectors (sqlite; postgres + s3/files in M1)
+  tabella-connectors/     Built-in connectors: sqlite, postgres, files/s3 (csv + parquet)
   tabella-catalog-om/     OpenMetadata catalog backend (M1)
   tabella-governance-aws/ AWS Glue + Lake Formation governance backend (M3)
   tabella-enable/         Generators: REST access layer, MCP tools (RAG + MCP server in M2)
@@ -113,8 +113,10 @@ the specs in this repo. No lock-in.
 
 - [x] **M0** — Specs v0.1, core models + registration pipeline with contract
   verification, sqlite connector, REST access layer, MCP tool manifest, CLI
-- [ ] **M1** — OpenMetadata backend + sandbox stack, Postgres + S3/files
-  connectors, `tabella init`
+- [x] **M1 (code)** — OpenMetadata backend (built against vendored 1.12.x API
+  schemas, mock-tested), Postgres connector, files/S3 connector (CSV + Parquet)
+- [ ] **M1 (validation)** — sandbox stack, live OpenMetadata + Postgres
+  verification, `tabella init`
 - [ ] **M2** — RAG vectorization (chunking → embeddings → pgvector), live MCP
   server, semantic search endpoints, `tabella vectorize`
 - [ ] **M3** — AWS reference deployment: Terraform, Glue + Lake Formation
