@@ -1,0 +1,840 @@
+<title>UDAP — Unified Data Access Platform</title>
+<style>
+  :root {
+    --bg: #0F0F0F;
+    --bg-subtle: #111114;
+    --surface: #1E1E21;
+    --surface-elevated: #2C2C30;
+    --border: #3C3C41;
+    --border-subtle: #26262b;
+    --text: #FEFEFF;
+    --text-2: #C4C6CE;
+    --text-3: #AEB0B8;
+    --primary: #1488FC;
+    --primary-hover: #1172E2;
+    --coral: #FF6AC1;
+    --good: #22C55E;
+    --warn: #F79009;
+    --bad: #EF4444;
+    --mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg-subtle); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- nav ---------- */
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(15, 15, 15, 0.75);
+    backdrop-filter: blur(17px);
+    -webkit-backdrop-filter: blur(17px);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .nav-inner { display: flex; align-items: center; gap: 32px; height: 64px; }
+  .wordmark { font-weight: 800; font-size: 18px; letter-spacing: -0.02em; text-decoration: none; color: var(--text); display: flex; align-items: baseline; gap: 8px; }
+  .wordmark .dot { color: var(--primary); }
+  .wordmark small { font-weight: 500; font-size: 10px; color: var(--text-3); letter-spacing: 0.14em; text-transform: uppercase; }
+  .nav-links { display: flex; gap: 24px; margin-left: auto; }
+  .nav-links a { color: var(--text-2); text-decoration: none; font-size: 14px; }
+  .nav-links a:hover, .nav-links a:focus-visible { color: var(--text); }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 4px; }
+  @media (max-width: 720px) { .nav-links { display: none; } }
+
+  /* ---------- hero ---------- */
+  header.hero {
+    position: relative;
+    padding: 96px 0 72px;
+    background:
+      radial-gradient(ellipse 900px 420px at 50% -140px,
+        rgba(20, 136, 252, 0.42) 0%,
+        rgba(20, 136, 252, 0.16) 38%,
+        rgba(17, 17, 20, 0.0) 72%);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .eyebrow {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--text-3);
+    display: inline-flex; align-items: center; gap: 10px;
+    border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px;
+    background: rgba(255,255,255,0.04);
+  }
+  .eyebrow b { color: var(--primary); font-weight: 600; }
+  .hero h1 {
+    font-size: clamp(40px, 6vw, 64px); line-height: 1.06; letter-spacing: -0.03em;
+    font-weight: 800; margin: 28px 0 20px; max-width: 17ch; text-wrap: balance;
+  }
+  .grad {
+    background: linear-gradient(135deg, #1488FC 0%, #FF6AC1 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero p.lede { font-size: 19px; color: var(--text-2); max-width: 62ch; }
+  .cta-row { display: flex; gap: 14px; margin-top: 32px; flex-wrap: wrap; }
+  .btn {
+    display: inline-block; text-decoration: none; font-weight: 600; font-size: 15px;
+    padding: 12px 22px; border-radius: 10px; border: 1px solid transparent;
+  }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-ghost { border-color: var(--border); color: var(--text-2); background: rgba(255,255,255,0.03); }
+  .btn-ghost:hover { color: var(--text); border-color: var(--text-3); }
+
+  /* pipeline strip */
+  .pipeline { display: flex; align-items: stretch; gap: 0; margin-top: 64px; overflow-x: auto; padding-bottom: 8px; }
+  .stage { min-width: 148px; flex: 1; }
+  .stage .chip {
+    border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px;
+    background: rgba(30, 30, 33, 0.8); backdrop-filter: blur(10px); height: 100%;
+  }
+  .stage .k { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--primary); }
+  .stage.dim .k { color: var(--text-3); }
+  .stage .v { font-size: 13px; color: var(--text-2); margin-top: 4px; }
+  .arrow { align-self: center; color: var(--border); padding: 0 8px; flex: none; font-family: var(--mono); }
+
+  /* ---------- sections ---------- */
+  section { padding: 88px 0; border-bottom: 1px solid var(--border-subtle); }
+  .sec-eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--primary); }
+  section h2 { font-size: clamp(28px, 4vw, 38px); letter-spacing: -0.02em; font-weight: 750; margin: 10px 0 12px; text-wrap: balance; }
+  .sec-lede { color: var(--text-2); max-width: 68ch; font-size: 16.5px; }
+
+  /* capability grid */
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 40px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 620px) { .grid { grid-template-columns: 1fr; } }
+  .card {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(17px); -webkit-backdrop-filter: blur(17px);
+    border-radius: var(--radius); padding: 22px;
+  }
+  .card h3 { font-size: 16px; font-weight: 650; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+  .card p { font-size: 14px; color: var(--text-2); }
+  .card code, .inline-code { font-family: var(--mono); font-size: 0.9em; color: var(--text); background: rgba(255,255,255,0.07); padding: 1px 6px; border-radius: 5px; }
+  .glyph {
+    width: 28px; height: 28px; border-radius: 8px; flex: none;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(20, 136, 252, 0.15); color: var(--primary); font-family: var(--mono); font-size: 13px; font-weight: 600;
+  }
+
+  /* methodology */
+  .flow { display: grid; grid-template-columns: 56px 1fr; gap: 0 20px; margin-top: 44px; }
+  .flow .num {
+    font-family: var(--mono); font-size: 13px; color: var(--primary); font-weight: 600;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  .flow .num::after { content: ""; width: 1px; flex: 1; background: linear-gradient(var(--border), transparent 92%); }
+  .flow .step { padding-bottom: 40px; }
+  .flow .step:last-child { padding-bottom: 0; }
+  .flow h3 { font-size: 18px; font-weight: 650; margin-bottom: 6px; }
+  .flow h3 .who { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); margin-left: 10px; }
+  .flow p { color: var(--text-2); font-size: 15px; max-width: 68ch; }
+
+  .code-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 48px; }
+  @media (max-width: 860px) { .code-pair { grid-template-columns: 1fr; } }
+  .codeblock {
+    background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .codeblock .bar {
+    display: flex; align-items: center; gap: 8px; padding: 10px 16px;
+    border-bottom: 1px solid var(--border-subtle); font-family: var(--mono); font-size: 12px; color: var(--text-3);
+  }
+  .codeblock .bar::before { content: "● ● ●"; letter-spacing: 3px; font-size: 8px; color: var(--border); }
+  .codeblock pre {
+    padding: 18px; overflow-x: auto; font-family: var(--mono); font-size: 12.5px; line-height: 1.75; color: var(--text-2);
+  }
+  .tok-k { color: var(--primary); }
+  .tok-s { color: var(--coral); }
+  .tok-c { color: #6b6d76; }
+  .tok-g { color: var(--good); }
+  .tok-y { color: var(--warn); }
+
+  /* architecture */
+  .arch { margin-top: 44px; display: grid; gap: 14px; }
+  .arch-layer { border-radius: var(--radius); border: 1px solid var(--border); padding: 20px 22px; }
+  .arch-layer.commercial { background: linear-gradient(180deg, rgba(255,106,193,0.08), rgba(255,106,193,0.02)); border-color: rgba(255,106,193,0.35); }
+  .arch-layer.oss { background: linear-gradient(180deg, rgba(20,136,252,0.10), rgba(20,136,252,0.02)); border-color: rgba(20,136,252,0.35); }
+  .arch-layer.sources { background: rgba(255,255,255,0.03); }
+  .arch-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+  .arch-head h3 { font-size: 15px; font-weight: 700; letter-spacing: 0.02em; }
+  .arch-head .tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; }
+  .tag.pink { color: var(--coral); background: rgba(255,106,193,0.12); }
+  .tag.blue { color: var(--primary); background: rgba(20,136,252,0.14); }
+  .tag.grey { color: var(--text-3); background: rgba(255,255,255,0.06); }
+  .arch-items { display: flex; flex-wrap: wrap; gap: 8px; }
+  .arch-items span {
+    font-family: var(--mono); font-size: 12px; color: var(--text-2);
+    border: 1px solid var(--border-subtle); background: rgba(15,15,15,0.5);
+    padding: 6px 12px; border-radius: 8px;
+  }
+  .arch-rule { text-align: center; color: var(--text-3); font-size: 14px; max-width: 74ch; margin: 26px auto 0; font-style: italic; }
+  .arch-rule b { color: var(--text-2); font-style: normal; }
+
+  /* ---------- console ---------- */
+  .console-tabs { display: flex; gap: 8px; margin: 40px 0 0; flex-wrap: wrap; }
+  .console-tabs button {
+    font: inherit; font-size: 14px; font-weight: 600; color: var(--text-2);
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 999px;
+    padding: 9px 18px; cursor: pointer;
+  }
+  .console-tabs button[aria-selected="true"] { color: #fff; background: var(--primary); border-color: var(--primary); }
+  .console-tabs button:hover:not([aria-selected="true"]) { color: var(--text); }
+
+  .frame {
+    margin-top: 20px; border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
+    background: var(--bg-subtle); box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  }
+  .frame-bar {
+    display: flex; align-items: center; gap: 12px; padding: 11px 16px;
+    background: var(--surface); border-bottom: 1px solid var(--border-subtle);
+  }
+  .frame-bar .dots { display: flex; gap: 6px; }
+  .frame-bar .dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--border); display: block; }
+  .frame-bar .url {
+    font-family: var(--mono); font-size: 12px; color: var(--text-3);
+    background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: 7px;
+    padding: 4px 14px; flex: 1; max-width: 420px;
+  }
+  .screen { display: none; }
+  .screen.active { display: grid; grid-template-columns: 200px 1fr; min-height: 520px; }
+  @media (max-width: 820px) { .screen.active { grid-template-columns: 1fr; } .side { display: none; } }
+
+  .side { background: var(--surface); border-right: 1px solid var(--border-subtle); padding: 18px 12px; }
+  .side .brand { font-weight: 800; font-size: 14px; padding: 4px 10px 16px; letter-spacing: -0.01em; }
+  .side a { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; color: var(--text-3); text-decoration: none; font-size: 13.5px; }
+  .side a.on { background: rgba(20,136,252,0.14); color: var(--text); }
+  .side a:hover:not(.on) { color: var(--text-2); }
+  .side .ico { font-family: var(--mono); font-size: 11px; color: var(--primary); width: 16px; }
+
+  .main { padding: 22px 26px; overflow-x: auto; }
+  .main-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; }
+  .main-head h4 { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
+  .main-head .crumb { font-family: var(--mono); font-size: 12px; color: var(--text-3); }
+  .search {
+    margin-left: auto; font-family: var(--mono); font-size: 12px; color: var(--text-3);
+    border: 1px solid var(--border); border-radius: 8px; padding: 7px 14px; min-width: 200px;
+    background: var(--bg-subtle);
+  }
+  .btn-sm {
+    font-size: 13px; font-weight: 600; color: #fff; background: var(--primary);
+    border: none; border-radius: 8px; padding: 8px 14px; cursor: pointer;
+  }
+
+  table.ctable { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 640px; }
+  .ctable th {
+    text-align: left; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--text-3); font-weight: 500;
+    padding: 8px 12px; border-bottom: 1px solid var(--border);
+  }
+  .ctable td { padding: 11px 12px; border-bottom: 1px solid var(--border-subtle); color: var(--text-2); vertical-align: middle; }
+  .ctable td:first-child { font-family: var(--mono); font-size: 12.5px; color: var(--text); }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600;
+    border-radius: 999px; padding: 3px 10px; white-space: nowrap;
+  }
+  .pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .pill.internal { color: var(--primary); background: rgba(20,136,252,0.12); }
+  .pill.confidential { color: var(--warn); background: rgba(247,144,9,0.12); }
+  .pill.restricted { color: var(--bad); background: rgba(239,68,68,0.12); }
+  .pill.public { color: var(--good); background: rgba(34,197,94,0.12); }
+  .mini { font-family: var(--mono); font-size: 10.5px; color: var(--text-3); border: 1px solid var(--border); border-radius: 6px; padding: 2px 7px; margin-right: 4px; white-space: nowrap; }
+  .mini.on { color: var(--primary); border-color: rgba(20,136,252,0.5); }
+  .mini.rag { color: var(--coral); border-color: rgba(255,106,193,0.5); }
+
+  .status { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600; }
+  .status::before { content: "✓"; font-size: 11px; }
+  .status.ok { color: var(--good); }
+  .status.warn { color: var(--warn); } .status.warn::before { content: "⚠"; }
+  .status.err { color: var(--bad); } .status.err::before { content: "✕"; }
+
+  /* asset detail */
+  .detail-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 18px; }
+  @media (max-width: 900px) { .detail-grid { grid-template-columns: 1fr; } }
+  .panel { background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 16px 18px; }
+  .panel h5 { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-3); font-weight: 500; margin-bottom: 12px; }
+  .kv { display: grid; grid-template-columns: 120px 1fr; gap: 6px 12px; font-size: 13px; }
+  .kv dt { color: var(--text-3); } .kv dd { color: var(--text-2); font-family: var(--mono); font-size: 12.5px; }
+  .fieldrow { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border-subtle); font-size: 13px; }
+  .fieldrow:last-child { border-bottom: none; }
+  .fieldrow code { font-family: var(--mono); font-size: 12.5px; color: var(--text); min-width: 110px; }
+  .fieldrow .t { font-family: var(--mono); font-size: 11.5px; color: var(--primary); min-width: 70px; }
+  .fieldrow .pii { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: var(--warn); background: rgba(247,144,9,0.12); border-radius: 5px; padding: 2px 7px; }
+  .fieldrow .nn { font-family: var(--mono); font-size: 11px; color: var(--text-3); margin-left: auto; }
+  .artifact-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border-subtle); font-size: 13px; }
+  .artifact-row:last-child { border-bottom: none; }
+  .artifact-row code { font-family: var(--mono); font-size: 12px; color: var(--text-2); }
+  .artifact-row .lab { min-width: 88px; color: var(--text-3); font-size: 12px; }
+
+  /* onboarding form */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 900px) { .form-grid { grid-template-columns: 1fr; } }
+  .f-row { display: grid; grid-template-columns: 110px 1fr; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; }
+  .f-row label { color: var(--text-3); }
+  .f-input {
+    border: 1px solid var(--border); background: var(--bg-subtle); border-radius: 8px;
+    padding: 7px 12px; color: var(--text); font-size: 13px; font-family: inherit;
+  }
+  .f-input.mono { font-family: var(--mono); font-size: 12.5px; }
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .seg i { font-style: normal; font-size: 12px; padding: 6px 12px; color: var(--text-3); border-right: 1px solid var(--border); }
+  .seg i:last-child { border-right: none; }
+  .seg i.sel { background: rgba(20,136,252,0.16); color: var(--text); font-weight: 600; }
+  .toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-2); margin-right: 18px; }
+  .toggle .tk { width: 30px; height: 17px; border-radius: 999px; background: var(--border); position: relative; display: inline-block; }
+  .toggle .tk.on { background: var(--primary); }
+  .toggle .tk::after { content: ""; position: absolute; top: 2px; left: 2px; width: 13px; height: 13px; border-radius: 50%; background: #fff; }
+  .toggle .tk.on::after { left: auto; right: 2px; }
+
+  /* governance dashboard */
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+  @media (max-width: 900px) { .tiles { grid-template-columns: repeat(2, 1fr); } }
+  .tile { background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 14px 16px; }
+  .tile .lab { font-size: 12px; color: var(--text-3); }
+  .tile .num { font-size: 26px; font-weight: 750; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; margin-top: 2px; }
+  .tile .delta { font-size: 12px; font-weight: 600; }
+  .tile .delta.up { color: var(--good); }
+  .tile .delta.flat { color: var(--text-3); }
+  .bars { display: grid; gap: 9px; }
+  .bar-row { display: grid; grid-template-columns: 90px 1fr 46px; align-items: center; gap: 10px; font-size: 12.5px; }
+  .bar-row .n { color: var(--text-2); }
+  .bar-row .val { color: var(--text-3); font-family: var(--mono); font-size: 11.5px; text-align: right; font-variant-numeric: tabular-nums; }
+  .bar-track { height: 14px; border-radius: 4px; background: rgba(255,255,255,0.05); overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px 4px 4px 4px; background: var(--primary); }
+  .vio { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border-subtle); font-size: 13px; color: var(--text-2); }
+  .vio:last-child { border-bottom: none; }
+  .vio code { font-family: var(--mono); font-size: 12px; color: var(--text); }
+
+  /* open core */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 40px; }
+  @media (max-width: 820px) { .split { grid-template-columns: 1fr; } }
+  .split .col { border-radius: var(--radius); padding: 26px; border: 1px solid var(--border); }
+  .split .col.oss { border-color: rgba(20,136,252,0.4); background: linear-gradient(180deg, rgba(20,136,252,0.07), transparent 60%); }
+  .split .col.com { border-color: rgba(255,106,193,0.4); background: linear-gradient(180deg, rgba(255,106,193,0.07), transparent 60%); }
+  .split h3 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .split .sub { font-size: 13px; color: var(--text-3); margin-bottom: 16px; }
+  .split ul { list-style: none; display: grid; gap: 9px; }
+  .split li { font-size: 14px; color: var(--text-2); padding-left: 22px; position: relative; }
+  .split li::before { content: "→"; position: absolute; left: 0; font-family: var(--mono); }
+  .split .col.oss li::before { color: var(--primary); }
+  .split .col.com li::before { color: var(--coral); }
+
+  /* roadmap */
+  .miles { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 40px; }
+  @media (max-width: 900px) { .miles { grid-template-columns: 1fr; } }
+  .mile { border: 1px solid var(--border-subtle); border-radius: 10px; padding: 16px; background: rgba(255,255,255,0.02); }
+  .mile.done { border-color: rgba(34,197,94,0.45); background: rgba(34,197,94,0.05); }
+  .mile .m { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--text-3); display: flex; justify-content: space-between; }
+  .mile.done .m { color: var(--good); }
+  .mile h4 { font-size: 14px; font-weight: 650; margin: 6px 0 4px; }
+  .mile p { font-size: 12.5px; color: var(--text-3); }
+
+  footer { padding: 44px 0 60px; color: var(--text-3); font-size: 13.5px; }
+  footer .wrap { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+</style>
+
+<nav>
+  <div class="wrap nav-inner">
+    <a class="wordmark" href="#top">UDAP<span class="dot">.</span> <small>working name</small></a>
+    <div class="nav-links">
+      <a href="#capabilities">Capabilities</a>
+      <a href="#methodology">How it works</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#console">Console</a>
+      <a href="#opencore">Open core</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <span class="eyebrow"><b>UDAP</b> Unified Data Access Platform</span>
+    <h1>Every data asset in your enterprise, <span class="grad">cataloged, governed, and AI&#8209;ready.</span></h1>
+    <p class="lede">
+      Send an onboarding form to every data owner. UDAP registers each asset into your catalog,
+      verifies its contract against the live source, applies governance — and automatically generates
+      the AI enablement layer: standardized APIs, MCP tools, and RAG indexes. One pipeline, end to end.
+    </p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#console">Explore the console</a>
+      <a class="btn btn-ghost" href="#methodology">See how it works</a>
+    </div>
+
+    <div class="pipeline" aria-label="The UDAP pipeline">
+      <div class="stage"><div class="chip"><div class="k">Onboard</div><div class="v">manifest or form, discovery drafts</div></div></div>
+      <div class="arrow">→</div>
+      <div class="stage"><div class="chip"><div class="k">Catalog</div><div class="v">OpenMetadata: tags, domains, contracts</div></div></div>
+      <div class="arrow">→</div>
+      <div class="stage"><div class="chip"><div class="k">Govern</div><div class="v">Glue / Lake Formation, pluggable</div></div></div>
+      <div class="arrow">→</div>
+      <div class="stage"><div class="chip"><div class="k">Enable</div><div class="v">MCP tools, RAG indexes, APIs</div></div></div>
+      <div class="arrow">→</div>
+      <div class="stage"><div class="chip"><div class="k">Serve</div><div class="v">standardized access, semantic search</div></div></div>
+      <div class="arrow">→</div>
+      <div class="stage dim"><div class="chip"><div class="k">Observe</div><div class="v">compliance, utilization, metrics</div></div></div>
+    </div>
+  </div>
+</header>
+
+<section id="capabilities">
+  <div class="wrap">
+    <div class="sec-eyebrow">Capabilities</div>
+    <h2>The data management layer that AI use cases stand on</h2>
+    <p class="sec-lede">
+      Every AI initiative stalls on the same questions: what data exists, who owns it, can we use it,
+      how do we access it? UDAP answers them once, automatically, for every asset.
+    </p>
+    <div class="grid">
+      <div class="card">
+        <h3><span class="glyph">01</span> Manifest-driven onboarding</h3>
+        <p>Owners register assets with a declarative <span class="inline-code">onboarding.yaml</span> — name, domain, owner,
+        classification, contract, enablement. A portal form submits the exact same schema as JSON. One entry artifact, two doors.</p>
+      </div>
+      <div class="card">
+        <h3><span class="glyph">02</span> Automated discovery</h3>
+        <p><span class="inline-code">udap discover</span> crawls a source and drafts a manifest per asset it finds — for
+        human review, never silently into the catalog. Registration stays accountable to an owner.</p>
+      </div>
+      <div class="card">
+        <h3><span class="glyph">03</span> Contract verification</h3>
+        <p>Declared expectations are checked against the live source at registration. A missing field, wrong type,
+        or required-but-nullable column fails registration with a violation report — bad data never enters the catalog.</p>
+      </div>
+      <div class="card">
+        <h3><span class="glyph">04</span> Catalog &amp; governance</h3>
+        <p>Assets land in <strong>OpenMetadata</strong> with tags, domains, custom properties, and contracts applied.
+        Pluggable governance backends register assets in AWS Glue and grant Lake Formation permissions from the same descriptor.</p>
+      </div>
+      <div class="card">
+        <h3><span class="glyph">05</span> Generated access layers</h3>
+        <p>Every asset gets a standardized REST API — one contract for envelopes, pagination, filtering, and errors
+        across every source. Learn one UDAP API and you have learned them all.</p>
+      </div>
+      <div class="card">
+        <h3><span class="glyph">06</span> AI enablement</h3>
+        <p>MCP-aligned tool manifests, semantic search over RAG-vectorized content, PII automatically excluded from
+        agent-facing filters. Data agents can use safely, generated — not hand-built per project.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="methodology">
+  <div class="wrap">
+    <div class="sec-eyebrow">Methodology</div>
+    <h2>From onboarding form to AI-ready asset</h2>
+    <p class="sec-lede">
+      The pipeline mirrors how mature data organizations actually onboard assets — but automates every step after the form.
+      Each stage is derived from the one before it, and everything downstream is regenerable.
+    </p>
+
+    <div class="flow">
+      <div class="num">01</div>
+      <div class="step">
+        <h3>Declare the asset <span class="who">data owner</span></h3>
+        <p>The owner fills the onboarding manifest — YAML by hand or the console form. It captures identity
+        (name, domain, owner), classification, the data contract, access policy, and which enablement artifacts to produce.</p>
+      </div>
+      <div class="num">02</div>
+      <div class="step">
+        <h3>Introspect &amp; verify <span class="who">udap register</span></h3>
+        <p>UDAP connects to the source, extracts the schema in canonical types, and verifies the declared contract
+        against reality. Violations stop the pipeline with a precise report; PII markings flow into the schema.</p>
+      </div>
+      <div class="num">03</div>
+      <div class="step">
+        <h3>Catalog <span class="who">openmetadata</span></h3>
+        <p>The verified Asset Descriptor — the portable record every downstream artifact derives from — is written
+        locally and mirrored into OpenMetadata: entity, tags, domain assignment, custom properties, contract.</p>
+      </div>
+      <div class="num">04</div>
+      <div class="step">
+        <h3>Govern <span class="who">glue · lake formation</span></h3>
+        <p>Governance backends translate the descriptor's classification and access policy into real permissions —
+        Glue Data Catalog registration and Lake Formation grants on AWS, or any backend implementing the same interface.</p>
+      </div>
+      <div class="num">05</div>
+      <div class="step">
+        <h3>Enable &amp; serve <span class="who">generators</span></h3>
+        <p>Generators produce the REST access layer, the MCP tool manifest, and — for text-heavy assets — the RAG
+        pipeline: chunking, embeddings, vector index, semantic search endpoint. Restricted assets and PII fields are
+        excluded from agent surfaces by default.</p>
+      </div>
+      <div class="num">06</div>
+      <div class="step">
+        <h3>Observe <span class="who">platform</span></h3>
+        <p>The commercial console watches the whole estate: classification coverage, contract compliance, drift
+        detection on re-crawl, and utilization of every generated API and tool.</p>
+      </div>
+    </div>
+
+    <div class="code-pair">
+      <div class="codeblock">
+        <div class="bar">onboarding.yaml — the entry artifact</div>
+        <pre><span class="tok-k">asset</span>:
+  <span class="tok-k">name</span>: <span class="tok-s">customers</span>
+  <span class="tok-k">domain</span>: <span class="tok-s">sales</span>
+  <span class="tok-k">owner</span>: <span class="tok-s">sales-data@example.com</span>
+  <span class="tok-k">classification</span>: <span class="tok-s">internal</span>
+<span class="tok-k">source</span>:
+  <span class="tok-k">connector</span>: <span class="tok-s">postgres</span>
+  <span class="tok-k">uri</span>: <span class="tok-s">postgres://analytics-db:5432/retail</span>
+  <span class="tok-k">native_name</span>: <span class="tok-s">public.customers</span>
+<span class="tok-k">contract</span>:
+  <span class="tok-k">fields</span>:
+    - {<span class="tok-k">name</span>: <span class="tok-s">id</span>, <span class="tok-k">type</span>: <span class="tok-s">integer</span>, <span class="tok-k">required</span>: <span class="tok-y">true</span>}
+    - {<span class="tok-k">name</span>: <span class="tok-s">email</span>, <span class="tok-k">type</span>: <span class="tok-s">string</span>, <span class="tok-k">pii</span>: <span class="tok-y">true</span>}
+<span class="tok-k">enablement</span>:
+  <span class="tok-k">api</span>: <span class="tok-y">true</span>
+  <span class="tok-k">mcp</span>: <span class="tok-y">true</span></pre>
+      </div>
+      <div class="codeblock">
+        <div class="bar">terminal — the whole journey, four commands</div>
+        <pre><span class="tok-c">$</span> udap register onboarding.yaml
+<span class="tok-g">registered sales.customers → catalog/sales.customers.json</span>
+
+<span class="tok-c">$</span> udap discover postgres://analytics-db:5432/retail
+<span class="tok-g">drafted 14 manifest(s) → manifests/</span> <span class="tok-c">review, then register</span>
+
+<span class="tok-c">$</span> udap serve catalog/
+<span class="tok-g">serving 14 asset(s) on http://127.0.0.1:8400</span>
+<span class="tok-c">  GET /assets/sales.customers/records?country=DE</span>
+
+<span class="tok-c">$</span> udap tools catalog/ -o tools.json
+<span class="tok-g">wrote tools.json (14 tools)</span> <span class="tok-c">MCP-aligned, PII filtered out</span></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="architecture">
+  <div class="wrap">
+    <div class="sec-eyebrow">Architecture</div>
+    <h2>An open framework with a commercial control plane on top</h2>
+    <p class="sec-lede">
+      Every layer speaks the same five open specs — onboarding manifest, asset descriptor, connector interface,
+      access-layer contract, AI artifact manifests. The platform produces and consumes exactly what the OSS
+      framework does: you can always eject to the CLI with your catalog intact.
+    </p>
+
+    <div class="arch">
+      <div class="arch-layer commercial">
+        <div class="arch-head"><h3>UDAP Platform</h3><span class="tag pink">Commercial</span></div>
+        <div class="arch-items">
+          <span>onboarding portal</span><span>orchestration &amp; scheduling</span><span>approval workflows</span>
+          <span>drift detection</span><span>governance dashboards</span><span>utilization metrics</span>
+          <span>RBAC / SSO</span><span>multi-tenancy</span><span>audit</span>
+        </div>
+      </div>
+      <div class="arch-layer oss">
+        <div class="arch-head"><h3>UDAP Framework</h3><span class="tag blue">Open source · Apache-2.0</span></div>
+        <div class="arch-items">
+          <span>spec/ — 5 standards + JSON Schemas</span><span>udap-core — pipeline &amp; models</span>
+          <span>udap-connectors</span><span>udap-catalog-om</span><span>udap-governance-aws</span>
+          <span>udap-enable — API · MCP · RAG</span><span>udap-cli</span><span>deploy/ — sandbox &amp; AWS Terraform</span>
+        </div>
+      </div>
+      <div class="arch-layer sources">
+        <div class="arch-head"><h3>Your data estate</h3><span class="tag grey">Sources &amp; backends</span></div>
+        <div class="arch-items">
+          <span>PostgreSQL</span><span>S3 / files</span><span>SQLite</span><span>warehouses · v1.x</span>
+          <span>OpenMetadata</span><span>AWS Glue</span><span>Lake Formation</span><span>pgvector</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="arch-rule">The boundary rule: <b>anything a single engineer needs to make one asset flow is open;
+    anything an organization needs to run it at scale, with accountability, is commercial.</b></p>
+  </div>
+</section>
+
+<section id="console">
+  <div class="wrap">
+    <div class="sec-eyebrow">Console</div>
+    <h2>One control plane for the whole estate</h2>
+    <p class="sec-lede">
+      Concept mockups of the commercial console. Everything shown is a view over the same open artifacts
+      the CLI produces — descriptors in, dashboards out.
+    </p>
+
+    <div class="console-tabs" role="tablist" aria-label="Console screens">
+      <button role="tab" aria-selected="true" data-screen="s-catalog">Catalog</button>
+      <button role="tab" aria-selected="false" data-screen="s-asset">Asset detail</button>
+      <button role="tab" aria-selected="false" data-screen="s-onboard">Onboarding</button>
+      <button role="tab" aria-selected="false" data-screen="s-gov">Governance</button>
+    </div>
+
+    <div class="frame">
+      <div class="frame-bar"><div class="dots"><i></i><i></i><i></i></div><div class="url">console.udap.internal / acme-corp</div></div>
+
+      <!-- CATALOG -->
+      <div class="screen active" id="s-catalog">
+        <div class="side">
+          <div class="brand">UDAP<span style="color:var(--primary)">.</span></div>
+          <a class="on" href="#console"><span class="ico">◈</span>Catalog</a>
+          <a href="#console"><span class="ico">✚</span>Onboarding</a>
+          <a href="#console"><span class="ico">⛨</span>Governance</a>
+          <a href="#console"><span class="ico">⚡</span>AI Enablement</a>
+          <a href="#console"><span class="ico">∿</span>Metrics</a>
+        </div>
+        <div class="main">
+          <div class="main-head">
+            <h4>Asset Catalog</h4><span class="crumb">128 assets · 9 domains</span>
+            <span class="search">⌕ search assets, domains, owners…</span>
+            <button class="btn-sm">Onboard asset</button>
+          </div>
+          <table class="ctable">
+            <thead><tr><th>Asset</th><th>Domain</th><th>Owner</th><th>Classification</th><th>Enablement</th><th>Contract</th></tr></thead>
+            <tbody>
+              <tr><td>sales.customers</td><td>Sales</td><td>sales-data@</td><td><span class="pill internal">internal</span></td>
+                  <td><span class="mini on">API</span><span class="mini on">MCP</span></td><td><span class="status ok">verified</span></td></tr>
+              <tr><td>sales.orders</td><td>Sales</td><td>sales-data@</td><td><span class="pill internal">internal</span></td>
+                  <td><span class="mini on">API</span><span class="mini on">MCP</span></td><td><span class="status ok">verified</span></td></tr>
+              <tr><td>support.tickets</td><td>Support</td><td>cx-platform@</td><td><span class="pill internal">internal</span></td>
+                  <td><span class="mini on">API</span><span class="mini on">MCP</span><span class="mini rag">RAG</span></td><td><span class="status ok">verified</span></td></tr>
+              <tr><td>finance.invoices</td><td>Finance</td><td>fin-eng@</td><td><span class="pill confidential">confidential</span></td>
+                  <td><span class="mini on">API</span></td><td><span class="status warn">pending approval</span></td></tr>
+              <tr><td>hr.employees</td><td>People</td><td>hr-systems@</td><td><span class="pill restricted">restricted</span></td>
+                  <td><span class="mini">API</span></td><td><span class="status ok">verified · excluded from tools</span></td></tr>
+              <tr><td>marketing.web-events</td><td>Marketing</td><td>growth@</td><td><span class="pill public">public</span></td>
+                  <td><span class="mini on">API</span><span class="mini on">MCP</span></td><td><span class="status err">drift detected</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ASSET DETAIL -->
+      <div class="screen" id="s-asset">
+        <div class="side">
+          <div class="brand">UDAP<span style="color:var(--primary)">.</span></div>
+          <a class="on" href="#console"><span class="ico">◈</span>Catalog</a>
+          <a href="#console"><span class="ico">✚</span>Onboarding</a>
+          <a href="#console"><span class="ico">⛨</span>Governance</a>
+          <a href="#console"><span class="ico">⚡</span>AI Enablement</a>
+          <a href="#console"><span class="ico">∿</span>Metrics</a>
+        </div>
+        <div class="main">
+          <div class="main-head">
+            <h4>sales.customers</h4><span class="crumb">Catalog / Sales / customers</span>
+            <span style="margin-left:auto"><span class="pill internal">internal</span></span>
+          </div>
+          <div class="detail-grid">
+            <div style="display:grid; gap:18px">
+              <div class="panel">
+                <h5>Schema — introspected from source, canonical types</h5>
+                <div class="fieldrow"><code>id</code><span class="t">integer</span><span class="nn">primary key · not null</span></div>
+                <div class="fieldrow"><code>email</code><span class="t">string</span><span class="pii">PII</span><span class="nn">not null</span></div>
+                <div class="fieldrow"><code>full_name</code><span class="t">string</span><span class="pii">PII</span><span class="nn">not null</span></div>
+                <div class="fieldrow"><code>country</code><span class="t">string</span><span class="nn">nullable</span></div>
+                <div class="fieldrow"><code>created_at</code><span class="t">datetime</span><span class="nn">not null</span></div>
+              </div>
+              <div class="panel">
+                <h5>Generated artifacts — regenerable from the descriptor</h5>
+                <div class="artifact-row"><span class="lab">REST</span><code>GET /assets/sales.customers/records?country=DE</code></div>
+                <div class="artifact-row"><span class="lab">MCP tool</span><code>query_sales_customers</code> <span class="mini on">PII excluded from filters</span></div>
+                <div class="artifact-row"><span class="lab">Descriptor</span><code>catalog/sales.customers.json</code></div>
+                <div class="artifact-row"><span class="lab">Catalog</span><code>OpenMetadata · sales domain · 2 tags · contract attached</code></div>
+              </div>
+            </div>
+            <div style="display:grid; gap:18px; align-content:start">
+              <div class="panel">
+                <h5>Contract — verified at registration</h5>
+                <div class="fieldrow"><span class="status ok">id — integer, required</span></div>
+                <div class="fieldrow"><span class="status ok">email — string, required, pii</span></div>
+                <div class="fieldrow"><span class="status ok">full_name — pii</span></div>
+                <p style="font-size:12px; color:var(--text-3); margin-top:10px">3 of 3 checks passing · last verified on re-crawl</p>
+              </div>
+              <div class="panel">
+                <h5>Ownership &amp; governance</h5>
+                <dl class="kv">
+                  <dt>Owner</dt><dd>sales-data@example.com</dd>
+                  <dt>Domain</dt><dd>sales</dd>
+                  <dt>Read roles</dt><dd>sales, analytics</dd>
+                  <dt>Row limit</dt><dd>1000</dd>
+                  <dt>Governance</dt><dd>Glue ✓ · Lake Formation ✓</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ONBOARDING -->
+      <div class="screen" id="s-onboard">
+        <div class="side">
+          <div class="brand">UDAP<span style="color:var(--primary)">.</span></div>
+          <a href="#console"><span class="ico">◈</span>Catalog</a>
+          <a class="on" href="#console"><span class="ico">✚</span>Onboarding</a>
+          <a href="#console"><span class="ico">⛨</span>Governance</a>
+          <a href="#console"><span class="ico">⚡</span>AI Enablement</a>
+          <a href="#console"><span class="ico">∿</span>Metrics</a>
+        </div>
+        <div class="main">
+          <div class="main-head">
+            <h4>Onboard a data asset</h4><span class="crumb">the form is the manifest — submission emits spec-compliant JSON</span>
+          </div>
+          <div class="form-grid">
+            <div class="panel">
+              <h5>Asset</h5>
+              <div class="f-row"><label>Name</label><span class="f-input mono">customers</span></div>
+              <div class="f-row"><label>Domain</label><span class="f-input">Sales ▾</span></div>
+              <div class="f-row"><label>Owner</label><span class="f-input mono">sales-data@example.com</span></div>
+              <div class="f-row"><label>Classification</label>
+                <span class="seg"><i>public</i><i class="sel">internal</i><i>confidential</i><i>restricted</i></span></div>
+              <h5 style="margin-top:18px">Source</h5>
+              <div class="f-row"><label>Connector</label><span class="f-input">PostgreSQL ▾</span></div>
+              <div class="f-row"><label>URI</label><span class="f-input mono">postgres://analytics-db:5432/retail</span></div>
+              <div class="f-row"><label>Table</label><span class="f-input mono">public.customers</span></div>
+              <h5 style="margin-top:18px">Enablement</h5>
+              <div style="padding:4px 0 2px">
+                <span class="toggle"><span class="tk on"></span>REST API</span>
+                <span class="toggle"><span class="tk on"></span>MCP tool</span>
+                <span class="toggle"><span class="tk"></span>RAG vectorization</span>
+              </div>
+            </div>
+            <div class="codeblock" style="align-self:start">
+              <div class="bar">live preview — submitted to the registration pipeline</div>
+              <pre>{
+  <span class="tok-k">"udap_version"</span>: <span class="tok-s">"0.1.0"</span>,
+  <span class="tok-k">"asset"</span>: {
+    <span class="tok-k">"name"</span>: <span class="tok-s">"customers"</span>,
+    <span class="tok-k">"domain"</span>: <span class="tok-s">"sales"</span>,
+    <span class="tok-k">"owner"</span>: <span class="tok-s">"sales-data@example.com"</span>,
+    <span class="tok-k">"classification"</span>: <span class="tok-s">"internal"</span>
+  },
+  <span class="tok-k">"source"</span>: {
+    <span class="tok-k">"connector"</span>: <span class="tok-s">"postgres"</span>,
+    <span class="tok-k">"uri"</span>: <span class="tok-s">"postgres://analytics-db:5432/retail"</span>,
+    <span class="tok-k">"native_name"</span>: <span class="tok-s">"public.customers"</span>
+  },
+  <span class="tok-k">"enablement"</span>: { <span class="tok-k">"api"</span>: <span class="tok-y">true</span>, <span class="tok-k">"mcp"</span>: <span class="tok-y">true</span> }
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GOVERNANCE -->
+      <div class="screen" id="s-gov">
+        <div class="side">
+          <div class="brand">UDAP<span style="color:var(--primary)">.</span></div>
+          <a href="#console"><span class="ico">◈</span>Catalog</a>
+          <a href="#console"><span class="ico">✚</span>Onboarding</a>
+          <a class="on" href="#console"><span class="ico">⛨</span>Governance</a>
+          <a href="#console"><span class="ico">⚡</span>AI Enablement</a>
+          <a href="#console"><span class="ico">∿</span>Metrics</a>
+        </div>
+        <div class="main">
+          <div class="main-head"><h4>Governance overview</h4><span class="crumb">last crawl 22 min ago</span></div>
+          <div class="tiles">
+            <div class="tile"><div class="lab">Assets cataloged</div><div class="num">128</div><div class="delta up">▲ 12 this month</div></div>
+            <div class="tile"><div class="lab">Classification coverage</div><div class="num">94%</div><div class="delta up">▲ 3 pts</div></div>
+            <div class="tile"><div class="lab">Contract compliance</div><div class="num">97%</div><div class="delta flat">4 open violations</div></div>
+            <div class="tile"><div class="lab">PII fields inventoried</div><div class="num">312</div><div class="delta flat">across 41 assets</div></div>
+          </div>
+          <div class="detail-grid">
+            <div class="panel">
+              <h5>Onboarded assets by domain</h5>
+              <div class="bars">
+                <div class="bar-row"><span class="n">Sales</span><div class="bar-track"><div class="bar-fill" style="width:88%"></div></div><span class="val">34</span></div>
+                <div class="bar-row"><span class="n">Finance</span><div class="bar-track"><div class="bar-fill" style="width:70%"></div></div><span class="val">27</span></div>
+                <div class="bar-row"><span class="n">Support</span><div class="bar-track"><div class="bar-fill" style="width:57%"></div></div><span class="val">22</span></div>
+                <div class="bar-row"><span class="n">Marketing</span><div class="bar-track"><div class="bar-fill" style="width:47%"></div></div><span class="val">18</span></div>
+                <div class="bar-row"><span class="n">People</span><div class="bar-track"><div class="bar-fill" style="width:31%"></div></div><span class="val">12</span></div>
+                <div class="bar-row"><span class="n">Other</span><div class="bar-track"><div class="bar-fill" style="width:39%"></div></div><span class="val">15</span></div>
+              </div>
+            </div>
+            <div class="panel">
+              <h5>Needs attention</h5>
+              <div class="vio"><span class="status err"></span><span><code>marketing.web-events</code> — schema drift: column <code>utm_src</code> renamed; contract re-verification required</span></div>
+              <div class="vio"><span class="status warn"></span><span><code>finance.invoices</code> — steward approval pending for 6 days</span></div>
+              <div class="vio"><span class="status warn"></span><span><code>ops.device-logs</code> — no owner assigned; excluded from enablement</span></div>
+              <div class="vio"><span class="status warn"></span><span><code>sales.leads-2024</code> — unused for 90 days · candidate for archive</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="opencore">
+  <div class="wrap">
+    <div class="sec-eyebrow">Open core</div>
+    <h2>Open standards. Commercial scale.</h2>
+    <p class="sec-lede">
+      The framework and the standards are Apache-2.0 — adopt them, extend them, build on them.
+      The platform is how an organization runs the whole estate with accountability.
+    </p>
+    <div class="split">
+      <div class="col oss">
+        <h3>UDAP Framework</h3>
+        <div class="sub">Open source · Apache-2.0</div>
+        <ul>
+          <li>The five specs + JSON Schemas — manifests, descriptors, contracts, tools</li>
+          <li>Connectors: PostgreSQL, S3/files, SQLite — and a plugin SDK for yours</li>
+          <li>Registration pipeline with contract verification &amp; PII propagation</li>
+          <li>OpenMetadata + AWS Glue/Lake Formation backend adapters</li>
+          <li>Generators: REST access layers, MCP tools, RAG indexes</li>
+          <li>The <code class="inline-code">udap</code> CLI, local sandbox, AWS reference Terraform</li>
+        </ul>
+      </div>
+      <div class="col com">
+        <h3>UDAP Platform</h3>
+        <div class="sub">Commercial · runs on the open framework</div>
+        <ul>
+          <li>Onboarding portal — the form UI that emits spec-compliant manifests</li>
+          <li>Scheduled crawling, drift detection, approval workflows</li>
+          <li>Governance &amp; compliance dashboards, exportable audit evidence</li>
+          <li>Utilization &amp; performance metrics on every API and tool</li>
+          <li>RBAC/SSO, multi-tenancy, secret management, managed infra</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="roadmap" style="border-bottom:none">
+  <div class="wrap">
+    <div class="sec-eyebrow">Roadmap</div>
+    <h2>Where the build is</h2>
+    <div class="miles">
+      <div class="mile done"><div class="m">M0 <span>✓ done</span></div><h4>Specs &amp; pipeline</h4><p>Standards v0.1, registration with contract verification, SQLite connector, REST + MCP generators, CLI.</p></div>
+      <div class="mile"><div class="m">M1</div><h4>Catalog e2e</h4><p>OpenMetadata backend, sandbox stack, PostgreSQL + S3/files connectors, <span style="font-family:var(--mono)">udap init</span>.</p></div>
+      <div class="mile"><div class="m">M2</div><h4>AI enablement</h4><p>RAG vectorization to pgvector, live MCP server, semantic search endpoints.</p></div>
+      <div class="mile"><div class="m">M3</div><h4>AWS reference</h4><p>Terraform deployment, Glue + Lake Formation governance backend.</p></div>
+      <div class="mile"><div class="m">M4</div><h4>Launch</h4><p>Docs site, public product name, platform build begins.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>UDAP — working name; renames before public launch. Framework: Apache-2.0.</span>
+    <span>Concept mockups — console screens are illustrative.</span>
+  </div>
+</footer>
+
+<script>
+  const tabs = document.querySelectorAll('.console-tabs button');
+  tabs.forEach(btn => btn.addEventListener('click', () => {
+    tabs.forEach(b => b.setAttribute('aria-selected', String(b === btn)));
+    document.querySelectorAll('.screen').forEach(s =>
+      s.classList.toggle('active', s.id === btn.dataset.screen));
+  }));
+</script>
