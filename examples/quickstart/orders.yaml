@@ -1,0 +1,29 @@
+udap_version: 0.1.0
+asset:
+  name: orders
+  description: Order transactions for the retail demo business
+  owner: sales-data@example.com
+  domain: sales
+  tags: [transactions]
+  classification: internal
+source:
+  connector: sqlite
+  uri: sqlite:///examples/quickstart/retail.db
+  native_name: orders
+contract:
+  fields:
+    - name: id
+      type: integer
+      required: true
+    - name: customer_id
+      type: integer
+      required: true
+    - name: total
+      type: number
+      required: true
+access:
+  read_roles: ["*"]
+  row_limit: 1000
+enablement:
+  api: true
+  mcp: true

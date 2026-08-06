@@ -1,0 +1,32 @@
+udap_version: 0.1.0
+asset:
+  name: customers
+  description: Customer master records for the retail demo business
+  owner: sales-data@example.com
+  domain: sales
+  tags: [crm, master-data]
+  classification: internal
+source:
+  connector: sqlite
+  uri: sqlite:///examples/quickstart/retail.db
+  native_name: customers
+contract:
+  fields:
+    - name: id
+      type: integer
+      required: true
+    - name: email
+      type: string
+      required: true
+      pii: true
+    - name: full_name
+      type: string
+      pii: true
+access:
+  read_roles: ["*"]
+  row_limit: 500
+enablement:
+  api: true
+  mcp: true
+custom_properties:
+  cost_center: "4211"

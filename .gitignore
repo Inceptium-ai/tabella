@@ -1,0 +1,18 @@
+__pycache__/
+*.py[oc]
+.venv/
+dist/
+build/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+uv.lock
+
+# local artifacts
+catalog/
+manifests/
+tools.json
+examples/quickstart/retail.db
+
+.DS_Store
+.env
