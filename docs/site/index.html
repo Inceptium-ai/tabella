@@ -417,8 +417,9 @@
       </div>
       <div class="card">
         <h3><span class="glyph">04</span> Catalog &amp; governance</h3>
-        <p>Assets land in <strong>OpenMetadata</strong> with tags, domains, custom properties, and contracts applied.
-        Pluggable governance backends register assets in AWS Glue and grant Lake Formation permissions from the same descriptor.</p>
+        <p>Assets land in <strong>OpenMetadata</strong> with tags, domains, custom properties, and contracts applied —
+        created directly, or enriched onto entities your Glue-driven ingestion pipeline produced. Same descriptor,
+        same FQN, any combination of Glue and OM.</p>
       </div>
       <div class="card">
         <h3><span class="glyph">05</span> Generated access layers</h3>
@@ -460,13 +461,18 @@
       <div class="step">
         <h3>Catalog <span class="who">openmetadata</span></h3>
         <p>The verified Asset Descriptor — the portable record every downstream artifact derives from — is written
-        locally and mirrored into OpenMetadata: entity, tags, domain assignment, custom properties, contract.</p>
+        locally and mirrored into OpenMetadata under the source-driven hierarchy
+        <span class="inline-code">service.db.source.asset</span> (e.g. <span class="inline-code">tabella.default.finapp.users</span>).
+        Two modes: <strong>direct</strong> (Tabella creates the entities) or <strong>ingest</strong> (your Glue-driven
+        ingestion pipeline produces them; Tabella triggers it, polls the deterministic FQN, then enriches in place —
+        tags, domain, PII labels, custom properties, contract via PATCH).</p>
       </div>
       <div class="num">04</div>
       <div class="step">
         <h3>Govern <span class="who">glue · lake formation</span></h3>
-        <p>Governance backends translate the descriptor's classification and access policy into real permissions —
-        Glue Data Catalog registration and Lake Formation grants on AWS, or any backend implementing the same interface.</p>
+        <p>Governance backends run before cataloging: on AWS, the asset registers in the Glue Data Catalog
+        (database = logical source, table = asset) so Lake Formation can govern it — and so OM ingestion has
+        something to discover. Every combination works: with or without Glue, with or without OpenMetadata.</p>
       </div>
       <div class="num">05</div>
       <div class="step">
@@ -493,6 +499,7 @@
   <span class="tok-k">classification</span>: <span class="tok-s">internal</span>
 <span class="tok-k">source</span>:
   <span class="tok-k">connector</span>: <span class="tok-s">postgres</span>
+  <span class="tok-k">name</span>: <span class="tok-s">retail</span>          <span class="tok-c"># logical source → Glue DB / OM schema</span>
   <span class="tok-k">uri</span>: <span class="tok-s">postgres://analytics-db:5432/retail</span>
   <span class="tok-k">native_name</span>: <span class="tok-s">public.customers</span>
 <span class="tok-k">contract</span>:
@@ -505,8 +512,8 @@
       </div>
       <div class="codeblock">
         <div class="bar">terminal — the whole journey, four commands</div>
-        <pre><span class="tok-c">$</span> tabella register onboarding.yaml
-<span class="tok-g">registered sales.customers → catalog/sales.customers.json</span>
+        <pre><span class="tok-c">$</span> tabella register onboarding.yaml --governance aws --backend openmetadata
+<span class="tok-g">registered sales.customers → catalog/sales.customers.json (applied: aws, openmetadata)</span>
 
 <span class="tok-c">$</span> tabella discover postgres://analytics-db:5432/retail
 <span class="tok-g">drafted 14 manifest(s) → manifests/</span> <span class="tok-c">review, then register</span>
@@ -648,7 +655,8 @@
                 <div class="artifact-row"><span class="lab">REST</span><code>GET /assets/sales.customers/records?country=DE</code></div>
                 <div class="artifact-row"><span class="lab">MCP tool</span><code>query_sales_customers</code> <span class="mini on">PII excluded from filters</span></div>
                 <div class="artifact-row"><span class="lab">Descriptor</span><code>catalog/sales.customers.json</code></div>
-                <div class="artifact-row"><span class="lab">Catalog</span><code>OpenMetadata · sales domain · 2 tags · contract attached</code></div>
+                <div class="artifact-row"><span class="lab">Catalog</span><code>OM tabella.default.retail.customers · sales domain · contract attached</code></div>
+                <div class="artifact-row"><span class="lab">Governance</span><code>Glue retail.customers · Lake Formation ready</code></div>
               </div>
             </div>
             <div style="display:grid; gap:18px; align-content:start">
@@ -697,6 +705,7 @@
               <div class="f-row"><label>Classification</label>
                 <span class="seg"><i>public</i><i class="sel">internal</i><i>confidential</i><i>restricted</i></span></div>
               <h5 style="margin-top:18px">Source</h5>
+              <div class="f-row"><label>Source name</label><span class="f-input mono">retail</span></div>
               <div class="f-row"><label>Connector</label><span class="f-input">PostgreSQL ▾</span></div>
               <div class="f-row"><label>URI</label><span class="f-input mono">postgres://analytics-db:5432/retail</span></div>
               <div class="f-row"><label>Table</label><span class="f-input mono">public.customers</span></div>
@@ -719,6 +728,7 @@
   },
   <span class="tok-k">"source"</span>: {
     <span class="tok-k">"connector"</span>: <span class="tok-s">"postgres"</span>,
+    <span class="tok-k">"name"</span>: <span class="tok-s">"retail"</span>,
     <span class="tok-k">"uri"</span>: <span class="tok-s">"postgres://analytics-db:5432/retail"</span>,
     <span class="tok-k">"native_name"</span>: <span class="tok-s">"public.customers"</span>
   },
