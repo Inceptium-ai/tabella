@@ -71,7 +71,9 @@ def test_missing_file_raises(data_dir):
 def test_register_and_fetch_with_filters(tmp_path, data_dir):
     manifest = OnboardingManifest(
         asset=AssetMeta(name="customers", domain="sales"),
-        source=SourceRef(connector="file", uri=data_dir, native_name="sales/customers.csv"),
+        source=SourceRef(
+            connector="file", name="lake", uri=data_dir, native_name="sales/customers.csv"
+        ),
     )
     descriptor = register(manifest, tmp_path / "catalog").descriptor
     records, total = get_connector("file").fetch(descriptor, filters={"country": "FR"})

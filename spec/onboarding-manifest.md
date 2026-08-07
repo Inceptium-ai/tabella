@@ -26,6 +26,7 @@ asset:
   classification: internal
 source:
   connector: postgres
+  name: retail
   uri: postgres://analytics-db.internal:5432/retail
   native_name: public.customers
 contract:
@@ -64,10 +65,20 @@ custom_properties:
 
 ### `source` (required)
 
-Physical binding: `connector` (registry scheme, e.g. `postgres`, `sqlite`,
-`s3`), `uri`, `native_name` (table / object prefix / file path within the
-source). Credentials MUST NOT appear in `uri`; connectors resolve secrets from
-the environment or a secret store.
+The asset's source, both logical and physical:
+
+- `name` — the **logical source** (`[a-z0-9_.-]+`, e.g. `finapp`,
+  `ipaddress.com`). This is the pivot of the catalog/governance hierarchy: it
+  becomes the Glue database and the OpenMetadata database schema, so every
+  asset of a source groups under one node and FQNs are identical whether or
+  not Glue is in the loop. Assets of the same source share the same `name`.
+- `connector` (registry scheme, e.g. `postgres`, `sqlite`, `s3`), `uri`, and
+  `native_name` (table / object prefix / file path within the source) are the
+  physical binding. Credentials MUST NOT appear in `uri`; connectors resolve
+  secrets from the environment or a secret store.
+
+Discovery drafts derive `name` from the URI (e.g. database name, directory
+name); owners confirm or correct it during review.
 
 ### `contract` (optional)
 

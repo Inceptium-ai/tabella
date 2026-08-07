@@ -64,6 +64,7 @@ class AssetSchema(BaseModel):
 
 class SourceRef(BaseModel):
     connector: str
+    name: str = Field(pattern=r"^[a-z0-9_.-]+$")
     uri: str
     native_name: str
 

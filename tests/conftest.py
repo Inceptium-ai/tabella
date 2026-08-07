@@ -63,7 +63,9 @@ def customers_manifest(demo_db: str) -> OnboardingManifest:
             domain="sales",
             tags=["crm"],
         ),
-        source=SourceRef(connector="sqlite", uri=demo_db, native_name="customers"),
+        source=SourceRef(
+            connector="sqlite", name="retail", uri=demo_db, native_name="customers"
+        ),
         contract=Contract(
             fields=[
                 ContractField(name="id", type=FieldType.integer, required=True),

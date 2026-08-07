@@ -23,7 +23,7 @@ Normative schema: [`schemas/asset-descriptor.schema.json`](schemas/asset-descrip
   "domain": "sales",
   "tags": ["crm", "master-data"],
   "classification": "internal",
-  "source": {"connector": "postgres", "uri": "postgres://analytics-db.internal:5432/retail", "native_name": "public.customers"},
+  "source": {"connector": "postgres", "name": "retail", "uri": "postgres://analytics-db.internal:5432/retail", "native_name": "public.customers"},
   "schema": {
     "fields": [
       {"name": "id", "type": "integer", "nullable": false},
@@ -52,7 +52,7 @@ Normative schema: [`schemas/asset-descriptor.schema.json`](schemas/asset-descrip
 | `domain` | string | ✓ | Business domain |
 | `tags` | string[] | | Catalog tags |
 | `classification` | enum | ✓ | `public` \| `internal` \| `confidential` \| `restricted` |
-| `source` | object | ✓ | `connector`, `uri`, `native_name` |
+| `source` | object | ✓ | `connector`, `name` (logical source), `uri`, `native_name` |
 | `schema` | object | ✓ | Introspected logical schema (below) |
 | `contract` | object | | The verified contract from the manifest, carried for catalog publication (same shape as the manifest's `contract`) |
 | `access` | object | | `read_roles`, `row_limit` |

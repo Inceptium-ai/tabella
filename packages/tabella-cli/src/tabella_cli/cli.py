@@ -28,22 +28,34 @@ def _catalog_backends(names: list[str]):
     return backends
 
 
+def _governance_backends(names: list[str]):
+    backends = []
+    for name in names:
+        if name == "aws":
+            from tabella_governance_aws import GlueGovernance
+
+            backends.append(GlueGovernance())
+        else:
+            raise ValueError(f"Unknown governance backend: {name}")
+    return backends
+
+
 def _cmd_register(args: argparse.Namespace) -> int:
     backends = _catalog_backends(args.backend or [])
+    governance = _governance_backends(args.governance or [])
     for path in args.manifests:
         manifest = load_manifest(path)
-        result = register(manifest, args.catalog, catalog_backends=backends)
-        mirrored = (
-            f" (mirrored to: {', '.join(result.catalog_backends)})"
-            if result.catalog_backends
-            else ""
+        result = register(
+            manifest, args.catalog, catalog_backends=backends, governance_backends=governance
         )
+        extras = [*result.governance_backends, *result.catalog_backends]
+        mirrored = f" (applied: {', '.join(extras)})" if extras else ""
         print(f"registered {result.descriptor.id} -> {result.descriptor_path}{mirrored}")
     return 0
 
 
 def _cmd_discover(args: argparse.Namespace) -> int:
-    drafts = discover(args.uri, domain=args.domain)
+    drafts = discover(args.uri, domain=args.domain, source_name=args.source_name)
     out = Path(args.output)
     out.mkdir(parents=True, exist_ok=True)
     for manifest in drafts:
@@ -102,7 +114,15 @@ def main(argv: list[str] | None = None) -> int:
         action="append",
         choices=["openmetadata"],
         help="Also mirror into a catalog backend (repeatable). openmetadata reads"
-        " TABELLA_OM_HOST / TABELLA_OM_TOKEN",
+        " TABELLA_OM_HOST / TABELLA_OM_TOKEN / TABELLA_OM_MODE (direct|ingest)"
+        " / TABELLA_OM_SERVICE / TABELLA_OM_DATABASE / TABELLA_OM_PIPELINE",
+    )
+    p.add_argument(
+        "--governance",
+        action="append",
+        choices=["aws"],
+        help="Also apply a governance backend (repeatable; runs before catalog"
+        " backends). aws = Glue registration, credentials from the AWS environment",
     )
     p.set_defaults(func=_cmd_register)
 
@@ -110,6 +130,10 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("uri", help="Source URI, e.g. sqlite:///path/to.db")
     p.add_argument("-o", "--output", default="manifests", help="Draft dir (default: manifests)")
     p.add_argument("--domain", default="unassigned", help="Domain to pre-fill in drafts")
+    p.add_argument(
+        "--source-name",
+        help="Logical source name for the drafts (default: derived from the URI)",
+    )
     p.set_defaults(func=_cmd_discover)
 
     p = sub.add_parser("validate", help="Validate every descriptor in a catalog")

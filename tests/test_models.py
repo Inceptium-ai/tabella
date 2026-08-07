@@ -33,7 +33,7 @@ def test_manifest_defaults():
         """
         tabella_version: 0.1.0
         asset: {name: Events Log, domain: Platform Ops}
-        source: {connector: sqlite, uri: sqlite:///x.db, native_name: events}
+        source: {connector: sqlite, name: opsdb, uri: sqlite:///x.db, native_name: events}
         """
     )
     manifest = OnboardingManifest.model_validate(data)

@@ -1,18 +1,13 @@
-"""tabella-governance-aws: AWS governance backend (lands in M3).
+"""tabella-governance-aws: AWS Glue governance backend.
 
-Will implement `tabella_core.interfaces.GovernanceBackend`: Glue Data Catalog
-registration and Lake Formation permission grants derived from descriptor
-`classification` and `access` policy.
+Glue database = logical source name; Glue table = asset name — mirroring the
+OpenMetadata hierarchy so Glue-ingested OM entities have deterministic FQNs.
+Lake Formation grants land with the org principal-mapping work (M3/platform).
 """
 
-from tabella_core.interfaces import GovernanceBackend
-from tabella_core.models import AssetDescriptor
+from tabella_governance_aws.glue import GlueGovernance
 
+# Back-compat alias for the original stub name.
+AwsGovernance = GlueGovernance
 
-class AwsGovernance(GovernanceBackend):
-    name = "aws"
-
-    def apply(self, descriptor: AssetDescriptor) -> None:
-        raise NotImplementedError(
-            "AWS Glue/Lake Formation backend lands in M3 (deploy/aws)"
-        )
+__all__ = ["AwsGovernance", "GlueGovernance"]

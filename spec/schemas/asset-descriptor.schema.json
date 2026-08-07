@@ -3,55 +3,167 @@
   "$id": "https://tabella.dev/schemas/0.1.0/asset-descriptor.schema.json",
   "title": "Tabella Asset Descriptor",
   "type": "object",
-  "required": ["tabella_version", "id", "name", "domain", "classification", "source", "schema"],
+  "required": [
+    "tabella_version",
+    "id",
+    "name",
+    "domain",
+    "classification",
+    "source",
+    "schema"
+  ],
   "properties": {
-    "tabella_version": {"type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$"},
-    "id": {"type": "string", "pattern": "^[a-z0-9_.-]+$"},
-    "name": {"type": "string", "minLength": 1},
-    "description": {"type": ["string", "null"]},
-    "owner": {"type": ["string", "null"]},
-    "domain": {"type": "string", "minLength": 1},
-    "tags": {"type": "array", "items": {"type": "string"}},
-    "classification": {"enum": ["public", "internal", "confidential", "restricted"]},
+    "tabella_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_.-]+$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "owner": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "domain": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "classification": {
+      "enum": [
+        "public",
+        "internal",
+        "confidential",
+        "restricted"
+      ]
+    },
     "source": {
       "type": "object",
-      "required": ["connector", "uri", "native_name"],
+      "required": [
+        "connector",
+        "name",
+        "uri",
+        "native_name"
+      ],
       "properties": {
-        "connector": {"type": "string"},
-        "uri": {"type": "string"},
-        "native_name": {"type": "string"}
+        "connector": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9_.-]+$",
+          "description": "Logical source name (e.g. finapp) \u2014 becomes the Glue database / OM database schema"
+        },
+        "uri": {
+          "type": "string"
+        },
+        "native_name": {
+          "type": "string"
+        }
       }
     },
     "schema": {
       "type": "object",
-      "required": ["fields"],
+      "required": [
+        "fields"
+      ],
       "properties": {
         "fields": {
           "type": "array",
           "minItems": 1,
           "items": {
             "type": "object",
-            "required": ["name"],
+            "required": [
+              "name"
+            ],
             "properties": {
-              "name": {"type": "string", "minLength": 1},
-              "type": {"enum": ["string", "integer", "number", "boolean", "date", "datetime", "json", "binary", "unknown"]},
-              "nullable": {"type": "boolean"},
-              "description": {"type": ["string", "null"]},
-              "semantic_tags": {"type": "array", "items": {"type": "string"}},
-              "pii": {"type": "boolean"}
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "type": {
+                "enum": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "date",
+                  "datetime",
+                  "json",
+                  "binary",
+                  "unknown"
+                ]
+              },
+              "nullable": {
+                "type": "boolean"
+              },
+              "description": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "semantic_tags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "pii": {
+                "type": "boolean"
+              }
             }
           }
         },
-        "primary_key": {"type": "array", "items": {"type": "string"}},
+        "primary_key": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "foreign_keys": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["fields", "ref_asset", "ref_fields"],
+            "required": [
+              "fields",
+              "ref_asset",
+              "ref_fields"
+            ],
             "properties": {
-              "fields": {"type": "array", "items": {"type": "string"}},
-              "ref_asset": {"type": "string"},
-              "ref_fields": {"type": "array", "items": {"type": "string"}}
+              "fields": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "ref_asset": {
+                "type": "string"
+              },
+              "ref_fields": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
             }
           }
         }
@@ -64,12 +176,34 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["name"],
+            "required": [
+              "name"
+            ],
             "properties": {
-              "name": {"type": "string", "minLength": 1},
-              "type": {"enum": ["string", "integer", "number", "boolean", "date", "datetime", "json", "binary", "unknown", null]},
-              "required": {"type": "boolean"},
-              "pii": {"type": "boolean"}
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "type": {
+                "enum": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "date",
+                  "datetime",
+                  "json",
+                  "binary",
+                  "unknown",
+                  null
+                ]
+              },
+              "required": {
+                "type": "boolean"
+              },
+              "pii": {
+                "type": "boolean"
+              }
             }
           }
         }
@@ -78,28 +212,71 @@
     "access": {
       "type": "object",
       "properties": {
-        "read_roles": {"type": "array", "items": {"type": "string"}},
-        "row_limit": {"type": "integer", "minimum": 1}
+        "read_roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "row_limit": {
+          "type": "integer",
+          "minimum": 1
+        }
       }
     },
     "enablement": {
       "type": "object",
       "properties": {
-        "api": {"type": "boolean"},
-        "mcp": {"type": "boolean"},
+        "api": {
+          "type": "boolean"
+        },
+        "mcp": {
+          "type": "boolean"
+        },
         "vectorization": {
           "type": "object",
           "properties": {
-            "enabled": {"type": "boolean"},
-            "content_fields": {"type": "array", "items": {"type": "string"}},
-            "chunking": {"enum": ["semantic", "fixed", "document"]},
-            "chunk_size": {"type": "integer", "minimum": 1},
-            "embedding_model": {"type": ["string", "null"]}
+            "enabled": {
+              "type": "boolean"
+            },
+            "content_fields": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "chunking": {
+              "enum": [
+                "semantic",
+                "fixed",
+                "document"
+              ]
+            },
+            "chunk_size": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "embedding_model": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
           }
         }
       }
     },
-    "custom_properties": {"type": "object", "additionalProperties": {"type": "string"}},
-    "lineage": {"type": "array", "items": {"type": "string"}}
+    "custom_properties": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "lineage": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
   }
 }

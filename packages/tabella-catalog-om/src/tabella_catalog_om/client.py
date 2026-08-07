@@ -6,6 +6,7 @@ Endpoints and payload shapes follow the vendored schemas in ../../reference/
 
 from __future__ import annotations
 
+import json
 import os
 from typing import Any
 
@@ -45,10 +46,38 @@ class OpenMetadataClient:
             raise OpenMetadataError("PUT", path, resp.status_code, resp.text)
         return resp.json()
 
+    def post(self, path: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
+        resp = self._http.post(path, json=payload or {})
+        if resp.status_code >= 400:
+            raise OpenMetadataError("POST", path, resp.status_code, resp.text)
+        return resp.json() if resp.content else {}
+
     def get(self, path: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
         resp = self._http.get(path, params=params)
         if resp.status_code >= 400:
             raise OpenMetadataError("GET", path, resp.status_code, resp.text)
+        return resp.json()
+
+    def get_optional(
+        self, path: str, params: dict[str, Any] | None = None
+    ) -> dict[str, Any] | None:
+        """GET that returns None on 404 (used for FQN polling)."""
+        resp = self._http.get(path, params=params)
+        if resp.status_code == 404:
+            return None
+        if resp.status_code >= 400:
+            raise OpenMetadataError("GET", path, resp.status_code, resp.text)
+        return resp.json()
+
+    def patch(self, path: str, operations: list[dict[str, Any]]) -> dict[str, Any]:
+        """JSON Patch (RFC 6902) — OM's enrichment surface."""
+        resp = self._http.patch(
+            path,
+            content=json.dumps(operations),
+            headers={"Content-Type": "application/json-patch+json"},
+        )
+        if resp.status_code >= 400:
+            raise OpenMetadataError("PATCH", path, resp.status_code, resp.text)
         return resp.json()
 
     def close(self) -> None:

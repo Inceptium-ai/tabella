@@ -102,12 +102,14 @@ def register(
     path = save_descriptor(descriptor, catalog_dir)
 
     result = RegistrationResult(descriptor=descriptor, descriptor_path=path)
-    for backend in catalog_backends or []:
-        backend.upsert_asset(descriptor)
-        result.catalog_backends.append(backend.name)
+    # Governance first: catalog backends in ingest mode (OM <- Glue ingestion)
+    # depend on the governed asset already existing.
     for backend in governance_backends or []:
         backend.apply(descriptor)
         result.governance_backends.append(backend.name)
+    for backend in catalog_backends or []:
+        backend.upsert_asset(descriptor)
+        result.catalog_backends.append(backend.name)
     return result
 
 
@@ -115,6 +117,7 @@ def discover(
     uri: str,
     *,
     connector_scheme: str | None = None,
+    source_name: str | None = None,
     domain: str = "unassigned",
     classification: Classification = Classification.internal,
 ) -> list[OnboardingManifest]:
@@ -123,6 +126,7 @@ def discover(
 
     scheme = connector_scheme or scheme_of(uri)
     connector = get_connector(scheme)
+    source = source_name or connector.source_name(uri)
     return [
         OnboardingManifest(
             asset=AssetMeta(
@@ -131,7 +135,9 @@ def discover(
                 domain=domain,
                 classification=classification,
             ),
-            source=SourceRef(connector=scheme, uri=uri, native_name=native_name),
+            source=SourceRef(
+                connector=scheme, name=source, uri=uri, native_name=native_name
+            ),
         )
         for native_name in connector.list_assets(uri)
     ]

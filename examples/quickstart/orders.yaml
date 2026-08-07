@@ -8,6 +8,7 @@ asset:
   classification: internal
 source:
   connector: sqlite
+  name: retail
   uri: sqlite:///examples/quickstart/retail.db
   native_name: orders
 contract:

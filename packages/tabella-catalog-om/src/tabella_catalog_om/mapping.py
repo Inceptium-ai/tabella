@@ -1,16 +1,25 @@
 """Descriptor -> OpenMetadata payload mapping.
 
-Shapes follow the vendored request schemas (reference/schemas). The OM entity
-hierarchy is service -> database -> schema -> table; FQN segments containing
-dots are quoted per OM rules.
+Two payload families:
+
+- **Provisioning** (direct mode only): technical entities — service, database,
+  schema (= logical source name), table with columns/constraints. No business
+  metadata here, so direct mode and ingestion-produced entities look alike.
+- **Enrichment** (every mode): JSON Patch operations layering business
+  metadata — tags, PII labels, domain, description, custom properties — onto
+  an existing table entity, plus the data-contract payload.
+
+Hierarchy standard: {service}.{database}.{source.name}.{asset name}.
+FQN segments containing dots are quoted per OM rules.
 """
 
 from __future__ import annotations
 
 from typing import Any
-from urllib.parse import urlparse
 
 from tabella_core.models import AssetDescriptor, Contract, FieldDef, FieldType
+
+from tabella_catalog_om.settings import OMSettings
 
 TABELLA_CLASSIFICATION = "Tabella"
 PII_TAG = "PII.Sensitive"
@@ -32,6 +41,7 @@ _OM_TYPES = {
 # metadata-only CustomDatabase service.
 _SERVICE_TYPES = {
     "postgres": "Postgres",
+    "postgresql": "Postgres",
     "mysql": "Mysql",
     "sqlite": "SQLite",
 }
@@ -45,25 +55,29 @@ def fqn(*parts: str) -> str:
     return ".".join(quote_fqn_part(p) for p in parts)
 
 
-def service_name(descriptor: AssetDescriptor) -> str:
-    return f"tabella-{descriptor.source.connector}"
+def table_fqn(descriptor: AssetDescriptor, settings: OMSettings) -> str:
+    return fqn(settings.service, settings.database, descriptor.source.name, descriptor.name)
 
 
-def database_name(descriptor: AssetDescriptor) -> str:
-    """Deterministic database segment derived from the source URI path."""
-    path = urlparse(descriptor.source.uri).path.strip("/")
-    last = path.rsplit("/", 1)[-1]
-    stem = last.rsplit(".", 1)[0] if "." in last else last
-    return stem or "default"
+def schema_fqn(descriptor: AssetDescriptor, settings: OMSettings) -> str:
+    return fqn(settings.service, settings.database, descriptor.source.name)
 
 
 def _tag_label(tag_fqn: str) -> dict[str, str]:
-    return {"tagFQN": tag_fqn}
+    return {
+        "tagFQN": tag_fqn,
+        "labelType": "Manual",
+        "state": "Confirmed",
+        "source": "Classification",
+    }
 
 
 def table_tags(descriptor: AssetDescriptor) -> list[str]:
     """Tabella-classification tag names applied to the table (sans FQN prefix)."""
     return [*descriptor.tags, descriptor.classification.value]
+
+
+# ---------- provisioning (direct mode) ----------
 
 
 def column_payload(field: FieldDef, primary_key: list[str]) -> dict[str, Any]:
@@ -74,36 +88,24 @@ def column_payload(field: FieldDef, primary_key: list[str]) -> dict[str, Any]:
         col["constraint"] = "PRIMARY_KEY"
     elif not field.nullable:
         col["constraint"] = "NOT_NULL"
-    if field.pii:
-        col["tags"] = [_tag_label(PII_TAG)]
     return col
 
 
-def table_payload(descriptor: AssetDescriptor, schema_fqn: str) -> dict[str, Any]:
-    pk = descriptor.asset_schema.primary_key
+def service_payload(descriptor: AssetDescriptor, settings: OMSettings) -> dict[str, Any]:
     return {
-        "name": descriptor.source.native_name,
-        "displayName": descriptor.name,
-        "description": descriptor.description,
-        "databaseSchema": schema_fqn,
-        "columns": [column_payload(f, pk) for f in descriptor.asset_schema.fields],
-        "tags": [
-            _tag_label(f"{TABELLA_CLASSIFICATION}.{t}") for t in table_tags(descriptor)
-        ],
-        "domains": [descriptor.domain],
-        **(
-            {"extension": dict(descriptor.custom_properties)}
-            if descriptor.custom_properties
-            else {}
-        ),
+        "name": settings.service,
+        "serviceType": _SERVICE_TYPES.get(descriptor.source.connector, "CustomDatabase"),
+        "description": "Tabella-managed data sources",
     }
 
 
-def service_payload(descriptor: AssetDescriptor) -> dict[str, Any]:
+def table_payload(descriptor: AssetDescriptor, settings: OMSettings) -> dict[str, Any]:
+    pk = descriptor.asset_schema.primary_key
     return {
-        "name": service_name(descriptor),
-        "serviceType": _SERVICE_TYPES.get(descriptor.source.connector, "CustomDatabase"),
-        "description": f"Tabella-managed {descriptor.source.connector} source",
+        "name": descriptor.name,
+        "displayName": descriptor.name,
+        "databaseSchema": schema_fqn(descriptor, settings),
+        "columns": [column_payload(f, pk) for f in descriptor.asset_schema.fields],
     }
 
 
@@ -113,6 +115,40 @@ def domain_payload(descriptor: AssetDescriptor) -> dict[str, Any]:
         "domainType": "Aggregate",
         "description": f"Tabella domain '{descriptor.domain}'",
     }
+
+
+# ---------- enrichment (every mode) ----------
+
+
+def enrichment_ops(
+    descriptor: AssetDescriptor, current: dict[str, Any], domain_ref: dict[str, Any]
+) -> list[dict[str, Any]]:
+    """JSON Patch ops layering business metadata onto the current table entity."""
+
+    def set_op(field_name: str, value: Any) -> dict[str, Any]:
+        op = "replace" if current.get(field_name) is not None else "add"
+        return {"op": op, "path": f"/{field_name}", "value": value}
+
+    ops = [
+        set_op(
+            "tags",
+            [_tag_label(f"{TABELLA_CLASSIFICATION}.{t}") for t in table_tags(descriptor)],
+        ),
+        set_op("domains", [domain_ref]),
+    ]
+    if descriptor.description:
+        ops.append(set_op("description", descriptor.description))
+    if descriptor.custom_properties:
+        ops.append(set_op("extension", dict(descriptor.custom_properties)))
+
+    pii_fields = {f.name for f in descriptor.asset_schema.fields if f.pii}
+    for index, column in enumerate(current.get("columns", [])):
+        if column["name"] in pii_fields:
+            op = "replace" if column.get("tags") else "add"
+            ops.append(
+                {"op": op, "path": f"/columns/{index}/tags", "value": [_tag_label(PII_TAG)]}
+            )
+    return ops
 
 
 def contract_payload(

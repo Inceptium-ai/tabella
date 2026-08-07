@@ -18,6 +18,20 @@ class Connector(ABC):
     scheme: ClassVar[str]
     aliases: ClassVar[tuple[str, ...]] = ()
 
+    def source_name(self, uri: str) -> str:
+        """Default logical source name derived from the URI (last path segment,
+        extension stripped). Discovery drafts use this; owners override it in
+        the manifest."""
+        from urllib.parse import urlparse
+
+        from tabella_core.models import slug
+
+        parsed = urlparse(uri)
+        path = parsed.path.strip("/")
+        last = path.rsplit("/", 1)[-1] if path else (parsed.netloc or self.scheme)
+        stem = last.rsplit(".", 1)[0] if "." in last else last
+        return slug(stem or self.scheme)
+
     @abstractmethod
     def list_assets(self, uri: str) -> list[str]: ...
 

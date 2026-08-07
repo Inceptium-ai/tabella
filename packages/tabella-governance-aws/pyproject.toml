@@ -6,7 +6,10 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
 authors = [{ name = "Yazdan Ahmed" }]
-dependencies = ["tabella-core"]
+dependencies = [
+    "tabella-core",
+    "boto3>=1.34",
+]
 
 [tool.uv.sources]
 tabella-core = { workspace = true }
