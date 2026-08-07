@@ -1,0 +1,22 @@
+tabella_version: 0.1.0
+asset:
+  name: tickets
+  description: Customer support tickets for the retail demo business
+  owner: cx-platform@example.com
+  domain: support
+  tags: [support, unstructured]
+  classification: internal
+source:
+  connector: sqlite
+  name: retail
+  uri: sqlite:///examples/quickstart/retail.db
+  native_name: tickets
+enablement:
+  api: true
+  mcp: true
+  vectorization:
+    enabled: true
+    content_fields: [subject, body]
+    metadata_fields: [id, customer_id, opened_at]
+    chunking: semantic
+    chunk_size: 512

@@ -113,14 +113,16 @@ the specs in this repo. No lock-in.
 
 - [x] **M0** — Specs v0.1, core models + registration pipeline with contract
   verification, sqlite connector, REST access layer, MCP tool manifest, CLI
-- [x] **M1 (code)** — OpenMetadata backend (built against vendored 1.12.x API
-  schemas, mock-tested), Postgres connector, files/S3 connector (CSV + Parquet)
-- [ ] **M1 (validation)** — sandbox stack, live OpenMetadata + Postgres
-  verification, `tabella init`
-- [ ] **M2** — RAG vectorization (chunking → embeddings → pgvector), live MCP
-  server, semantic search endpoints, `tabella vectorize`
-- [ ] **M3** — AWS reference deployment: Terraform, Glue + Lake Formation
-  governance backend
+- [x] **M1 (code)** — OpenMetadata backend (direct + Glue-ingest modes, built
+  against vendored 1.12.x API schemas, mock-tested), Glue governance backend,
+  Postgres connector, files/S3 connector (CSV + Parquet)
+- [x] **M2 (code)** — RAG vectorization (`tabella vectorize`: chunking →
+  embeddings → local/pgvector stores), semantic search endpoints, live MCP
+  server (`tabella mcp`, stdio)
+- [ ] **Live validation batch** — sandbox stack + AWS: OpenMetadata, Postgres,
+  Glue/Lake Formation, pgvector, `tabella init` (deferred to one deploy window
+  to minimize cloud cost)
+- [ ] **M3** — AWS reference deployment: Terraform
 - [ ] **M4** — Docs site, trademark + domain clearance for Tabella, launch
 
 ## License

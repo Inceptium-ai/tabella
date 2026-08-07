@@ -158,6 +158,12 @@
                 "type": "string"
               }
             },
+            "metadata_fields": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
             "chunking": {
               "enum": [
                 "semantic",

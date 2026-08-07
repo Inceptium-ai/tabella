@@ -83,6 +83,7 @@ class ChunkingStrategy(StrEnum):
 class VectorizationProfile(BaseModel):
     enabled: bool = False
     content_fields: list[str] = Field(default_factory=list)
+    metadata_fields: list[str] = Field(default_factory=list)
     chunking: ChunkingStrategy = ChunkingStrategy.fixed
     chunk_size: int = 512
     embedding_model: str | None = None

@@ -20,7 +20,26 @@ CREATE TABLE IF NOT EXISTS orders (
     status TEXT NOT NULL,
     placed_at DATETIME NOT NULL
 );
+CREATE TABLE IF NOT EXISTS tickets (
+    id INTEGER PRIMARY KEY,
+    customer_id INTEGER NOT NULL REFERENCES customers(id),
+    subject TEXT NOT NULL,
+    body TEXT NOT NULL,
+    opened_at DATETIME NOT NULL
+);
 """
+
+TICKETS = [
+    (1, 2, "Package arrived damaged",
+     "The box was crushed on delivery and the mug inside is chipped. "
+     "I would like a replacement shipped to the same address.", "2026-02-12 09:00:00"),
+    (2, 1, "Cannot reset my password",
+     "The password reset email never arrives even after checking spam. "
+     "My account uses the amelie@example.com address.", "2026-02-20 15:30:00"),
+    (3, 4, "Question about invoice VAT",
+     "The March invoice does not show the German VAT breakdown our finance "
+     "team needs for reporting. Can you reissue it with VAT details?", "2026-03-05 11:45:00"),
+]
 
 CUSTOMERS = [
     (1, "amelie@example.com", "Amelie Fournier", "FR", "2025-11-02 09:15:00"),
@@ -44,7 +63,11 @@ def main() -> None:
         conn.executescript(DDL)
         conn.executemany("INSERT INTO customers VALUES (?, ?, ?, ?, ?)", CUSTOMERS)
         conn.executemany("INSERT INTO orders VALUES (?, ?, ?, ?, ?)", ORDERS)
-    print(f"created {DB} ({len(CUSTOMERS)} customers, {len(ORDERS)} orders)")
+        conn.executemany("INSERT INTO tickets VALUES (?, ?, ?, ?, ?)", TICKETS)
+    print(
+        f"created {DB} ({len(CUSTOMERS)} customers, {len(ORDERS)} orders,"
+        f" {len(TICKETS)} tickets)"
+    )
 
 
 if __name__ == "__main__":

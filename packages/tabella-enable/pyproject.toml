@@ -9,6 +9,8 @@ authors = [{ name = "Yazdan Ahmed" }]
 dependencies = [
     "tabella-core",
     "fastapi>=0.111",
+    "httpx>=0.27",
+    "mcp>=1.2",
 ]
 
 [tool.uv.sources]

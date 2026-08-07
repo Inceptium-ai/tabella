@@ -68,7 +68,29 @@ def build_manifest(
         if d.enablement.mcp
         and (include_restricted or d.classification != Classification.restricted)
     ]
+    tools = [build_tool(d, include_pii_filters=include_pii_filters) for d in included]
+    tools += [build_search_tool(d) for d in included if d.enablement.vectorization.enabled]
+    return {"tabella_version": TABELLA_SPEC_VERSION, "tools": tools}
+
+
+def build_search_tool(descriptor: AssetDescriptor) -> dict[str, Any]:
+    about = f" ({descriptor.description})" if descriptor.description else ""
     return {
-        "tabella_version": TABELLA_SPEC_VERSION,
-        "tools": [build_tool(d, include_pii_filters=include_pii_filters) for d in included],
+        "name": "search_" + re.sub(r"[^a-zA-Z0-9_-]", "_", descriptor.id),
+        "description": (
+            f"Semantic search over the '{descriptor.name}' asset{about}. "
+            "Pass a natural-language query; returns the most relevant text "
+            "chunks with citation metadata and similarity scores."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "Natural-language search query"},
+                "top_k": {"type": "integer", "default": 5},
+            },
+            "required": ["query"],
+            "additionalProperties": False,
+        },
+        "asset": descriptor.id,
+        "endpoint": {"method": "POST", "path": f"/assets/{descriptor.id}/search"},
     }

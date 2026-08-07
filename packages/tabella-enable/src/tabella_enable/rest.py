@@ -39,7 +39,9 @@ def _coerce(value: str, ftype: FieldType) -> Any:
     return value
 
 
-def build_app(catalog: list[AssetDescriptor]) -> FastAPI:
+def build_app(catalog: list[AssetDescriptor], *, search=None) -> FastAPI:
+    """`search` is an optional tabella_enable.rag.SearchService for the
+    POST /assets/{id}/search endpoint on vectorized assets."""
     served = [d for d in catalog if d.enablement.api]
     by_id = {d.id: d for d in served}
     app = FastAPI(title="Tabella Access Layer", version="0.1.0")
@@ -94,5 +96,23 @@ def build_app(catalog: list[AssetDescriptor]) -> FastAPI:
             "pagination": {"limit": limit, "offset": offset, "total": total},
             "asset": asset_id,
         }
+
+    @app.post("/assets/{asset_id}/search")
+    async def semantic_search(asset_id: str, request: Request) -> dict[str, Any]:
+        descriptor = _get(asset_id)
+        if not descriptor.enablement.vectorization.enabled:
+            raise _ApiError(400, "not_vectorized", f"Asset '{asset_id}' is not vectorized")
+        if search is None:
+            raise _ApiError(503, "search_unavailable", "Semantic search is not configured")
+        body = await request.json()
+        query = body.get("query")
+        if not isinstance(query, str) or not query.strip():
+            raise _ApiError(400, "invalid_value", "Body must include a non-empty 'query'")
+        top_k = min(int(body.get("top_k", 5)), 50)
+        try:
+            results = search.search(descriptor, query, top_k)
+        except KeyError as exc:
+            raise _ApiError(409, "not_indexed", str(exc)) from None
+        return {"data": results, "asset": asset_id, "query": query}
 
     return app

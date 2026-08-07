@@ -1,6 +1,6 @@
-"""The `tabella` CLI: register, discover, validate, serve, tools.
+"""The `tabella` CLI: register, discover, validate, serve, tools, vectorize, mcp.
 
-M1 adds `init` (sandbox bootstrap); M2 adds `vectorize`.
+`init` (sandbox bootstrap) arrives with the live-validation milestone.
 """
 
 from __future__ import annotations
@@ -75,13 +75,62 @@ def _cmd_validate(args: argparse.Namespace) -> int:
     return 0
 
 
+def _search_service():
+    from tabella_enable.rag import (
+        SearchService,
+        embedding_provider_from_env,
+        vector_store_from_env,
+    )
+
+    return SearchService(embedding_provider_from_env(), vector_store_from_env())
+
+
 def _cmd_serve(args: argparse.Namespace) -> int:
     import uvicorn
     from tabella_enable.rest import build_app
 
     catalog = load_catalog(args.catalog)
     print(f"serving {len(catalog)} asset(s) on http://{args.host}:{args.port}")
-    uvicorn.run(build_app(catalog), host=args.host, port=args.port)
+    uvicorn.run(build_app(catalog, search=_search_service()), host=args.host, port=args.port)
+    return 0
+
+
+def _cmd_vectorize(args: argparse.Namespace) -> int:
+    from tabella_enable.rag import embedding_provider_from_env, vector_store_from_env
+    from tabella_enable.rag.pipeline import build_rag_manifest, vectorize_asset
+
+    catalog = load_catalog(args.catalog)
+    embedder = embedding_provider_from_env()
+    store = vector_store_from_env()
+    targets = [d for d in catalog if d.enablement.vectorization.enabled]
+    if args.assets:
+        targets = [d for d in targets if d.id in set(args.assets)]
+    if not targets:
+        print("no vectorization-enabled assets matched", file=sys.stderr)
+        return 1
+    entries = []
+    for descriptor in targets:
+        entry = vectorize_asset(descriptor, embedder, store)
+        entries.append(entry)
+        print(
+            f"vectorized {descriptor.id}: {entry['chunk_count']} chunk(s) -> "
+            f"{entry['store']['backend']}:{entry['store']['collection']}"
+        )
+    text = json.dumps(build_rag_manifest(entries), indent=2) + "\n"
+    if args.output:
+        Path(args.output).write_text(text)
+        print(f"wrote {args.output}")
+    return 0
+
+
+def _cmd_mcp(args: argparse.Namespace) -> int:
+    import asyncio
+
+    from tabella_enable.mcp_server import run_stdio
+
+    catalog = load_catalog(args.catalog)
+    search = None if args.no_search else _search_service()
+    asyncio.run(run_stdio(catalog, search=search))
     return 0
 
 
@@ -151,6 +200,21 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("-o", "--output", help="Write manifest to file instead of stdout")
     p.add_argument("--include-restricted", action="store_true")
     p.set_defaults(func=_cmd_tools)
+
+    p = sub.add_parser(
+        "vectorize",
+        help="Chunk, embed, and index vectorization-enabled assets; emit rag.json."
+        " Env: TABELLA_EMBED_* (hash|openai), TABELLA_VECTOR_* (local|pgvector)",
+    )
+    p.add_argument("catalog", help="Catalog directory")
+    p.add_argument("assets", nargs="*", help="Asset ids to vectorize (default: all enabled)")
+    p.add_argument("-o", "--output", help="Write the RAG index manifest to a file")
+    p.set_defaults(func=_cmd_vectorize)
+
+    p = sub.add_parser("mcp", help="Serve the catalog as a live MCP server (stdio)")
+    p.add_argument("catalog", help="Catalog directory")
+    p.add_argument("--no-search", action="store_true", help="Disable semantic search tools")
+    p.set_defaults(func=_cmd_mcp)
 
     args = parser.parse_args(argv)
     try:

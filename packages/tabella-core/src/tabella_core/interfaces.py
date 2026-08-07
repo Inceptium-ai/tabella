@@ -35,6 +35,31 @@ class EmbeddingProvider(ABC):
     """Embeds text chunks for RAG vectorization."""
 
     name: str
+    model: str
+    dimensions: int
 
     @abstractmethod
     def embed(self, texts: list[str]) -> list[list[float]]: ...
+
+
+class VectorStore(ABC):
+    """Stores and searches embedded chunks per asset collection.
+
+    Reference backends: local JSON files (dev/tests, no infra) and pgvector
+    (production). Re-vectorizing an asset MUST replace its collection
+    idempotently.
+    """
+
+    name: str
+
+    @abstractmethod
+    def replace_collection(
+        self, collection: str, chunks: list[dict], dimensions: int
+    ) -> None:
+        """Chunks are dicts: {id, record_ref, content, metadata, embedding}."""
+
+    @abstractmethod
+    def search(
+        self, collection: str, query_embedding: list[float], top_k: int = 5
+    ) -> list[dict]:
+        """Returns chunk dicts (sans embedding) with an added `score`."""

@@ -22,6 +22,15 @@ uv run tabella serve catalog/
 
 # 4. Emit the AI tool manifest (MCP-aligned)
 uv run tabella tools catalog/ -o tools.json
+
+# 5. Vectorize the tickets asset and search it semantically
+uv run tabella register examples/quickstart/tickets.yaml
+uv run tabella vectorize catalog/ -o rag.json
+#    then: POST http://127.0.0.1:8400/assets/support.tickets/search
+#          {"query": "invoice missing VAT breakdown"}
+
+# 6. Serve everything to AI agents as a live MCP server (stdio)
+uv run tabella mcp catalog/
 ```
 
 Things to notice:
