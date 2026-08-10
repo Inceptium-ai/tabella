@@ -58,6 +58,17 @@ governance backends, and generates the enablement artifacts. Everything
 downstream is derived and regenerable; PII markings flow into the catalog and
 out of AI tool filters automatically.
 
+## Install
+
+```bash
+pip install tabella-cli        # the CLI + the full framework
+# or pick pieces: tabella-core, tabella-connectors, tabella-catalog-om,
+#                 tabella-governance-aws, tabella-enable
+```
+
+> PyPI publication is pending first release — see [RELEASING.md](RELEASING.md).
+> Until then, work from source (below).
+
 ## Quickstart
 
 ```bash

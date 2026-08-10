@@ -1,11 +1,21 @@
 [project]
 name = "tabella-cli"
 version = "0.1.0"
-description = "The `tabella` CLI: register, discover, validate, serve, tools"
+description = "The `tabella` CLI: register, discover, validate, serve, tools, vectorize, mcp"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
 authors = [{ name = "Yazdan Ahmed" }]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Database",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 dependencies = [
     "tabella-core",
     "tabella-connectors",
@@ -24,6 +34,11 @@ tabella-connectors = { workspace = true }
 tabella-catalog-om = { workspace = true }
 tabella-governance-aws = { workspace = true }
 tabella-enable = { workspace = true }
+
+[project.urls]
+Homepage = "https://github.com/Yazdan-Ahmed/tabella"
+Repository = "https://github.com/Yazdan-Ahmed/tabella"
+Issues = "https://github.com/Yazdan-Ahmed/tabella/issues"
 
 [build-system]
 requires = ["hatchling"]

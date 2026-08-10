@@ -1,11 +1,21 @@
 [project]
 name = "tabella-governance-aws"
 version = "0.1.0"
-description = "Tabella governance backend for AWS Glue + Lake Formation (M3)"
+description = "Tabella governance backend for AWS Glue (Lake Formation grants planned)"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
 authors = [{ name = "Yazdan Ahmed" }]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Database",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 dependencies = [
     "tabella-core",
     "boto3>=1.34",
@@ -13,6 +23,11 @@ dependencies = [
 
 [tool.uv.sources]
 tabella-core = { workspace = true }
+
+[project.urls]
+Homepage = "https://github.com/Yazdan-Ahmed/tabella"
+Repository = "https://github.com/Yazdan-Ahmed/tabella"
+Issues = "https://github.com/Yazdan-Ahmed/tabella/issues"
 
 [build-system]
 requires = ["hatchling"]
