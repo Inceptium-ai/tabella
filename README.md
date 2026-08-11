@@ -66,8 +66,7 @@ pip install tabella-cli        # the CLI + the full framework
 #                 tabella-governance-aws, tabella-enable
 ```
 
-> PyPI publication is pending first release — see [RELEASING.md](RELEASING.md).
-> Until then, work from source (below).
+Or work from source (below) for development.
 
 ## Quickstart
 
