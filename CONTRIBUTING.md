@@ -6,7 +6,7 @@ for onboarding, cataloging, governing, and AI-enabling enterprise data.
 ## Development setup
 
 ```bash
-git clone https://github.com/Yazdan-Ahmed/tabella
+git clone https://github.com/Inceptium-ai/tabella
 cd tabella
 uv sync                 # installs all workspace packages + dev tools
 uv run pytest -q        # full suite runs offline — no databases or API keys

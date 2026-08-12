@@ -36,9 +36,9 @@ tabella-governance-aws = { workspace = true }
 tabella-enable = { workspace = true }
 
 [project.urls]
-Homepage = "https://github.com/Yazdan-Ahmed/tabella"
-Repository = "https://github.com/Yazdan-Ahmed/tabella"
-Issues = "https://github.com/Yazdan-Ahmed/tabella/issues"
+Homepage = "https://github.com/Inceptium-ai/tabella"
+Repository = "https://github.com/Inceptium-ai/tabella"
+Issues = "https://github.com/Inceptium-ai/tabella/issues"
 
 [build-system]
 requires = ["hatchling"]
