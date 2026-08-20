@@ -1,5 +1,10 @@
 # Tabella
 
+[![PyPI](https://img.shields.io/pypi/v/tabella-cli)](https://pypi.org/project/tabella-cli/)
+[![CI](https://github.com/Inceptium-ai/tabella/actions/workflows/ci.yml/badge.svg)](https://github.com/Inceptium-ai/tabella/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
+[![Python](https://img.shields.io/pypi/pyversions/tabella-core)](https://pypi.org/project/tabella-core/)
+
 **Tabella makes enterprise data AI-ready.** Open framework and standards for
 onboarding, cataloging, governing, and AI-enabling enterprise data.
 
@@ -129,6 +134,8 @@ the specs in this repo. No lock-in.
 - [x] **M2 (code)** — RAG vectorization (`tabella vectorize`: chunking →
   embeddings → local/pgvector stores), semantic search endpoints, live MCP
   server (`tabella mcp`, stdio)
+- [x] **v0.1.0 published** — all six packages on PyPI with automated,
+  tokenless releases (tag-triggered trusted publishing)
 - [ ] **Live validation batch** — sandbox stack + AWS: OpenMetadata, Postgres,
   Glue/Lake Formation, pgvector, `tabella init` (deferred to one deploy window
   to minimize cloud cost)

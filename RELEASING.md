@@ -3,38 +3,27 @@
 All six packages version and release **in lockstep** — one tag publishes them
 all at the same version.
 
-## One-time setup
+## Setup status: ✅ complete (v0.1.0, 2026-08-20)
 
-Steady state is trusted publishing (GitHub OIDC, no stored tokens) — but PyPI
-requires every **pending** publisher (for a project that doesn't exist yet) to
-have a *unique* configuration, so six identical repo/workflow/environment
-entries can't be pre-registered from one monorepo. The first release is
-therefore **bootstrapped with a one-time API token**, after which all six
-projects exist and identical trusted publishers are allowed.
+All six projects exist on PyPI with **trusted publishing** configured
+(GitHub OIDC — no stored tokens): each project's publisher is
+`Inceptium-ai/tabella` · workflow `release.yml` · environment `pypi`, and the
+`pypi` environment exists on the GitHub repo. Every release from here on is
+fully automated by the tag push below.
 
-1. Remove any pending publishers left over from earlier attempts
-   (pypi.org → account → Publishing).
-2. Create an API token (pypi.org → Account settings → API tokens → scope
-   *Entire account*; 2FA required).
-3. Build and upload the first release locally:
+<details>
+<summary>How the first release was bootstrapped (for the record)</summary>
 
-   ```bash
-   uv run ruff check . && uv run pytest -q
-   rm -rf dist && for p in tabella-core tabella-connectors tabella-catalog-om \
-     tabella-governance-aws tabella-enable tabella-cli; do uv build --package $p; done
-   uv publish --token pypi-XXXX...           # uploads everything in dist/
-   ```
+PyPI requires every **pending** publisher (for a not-yet-existing project) to
+have a *unique* configuration, so six identical entries can't be
+pre-registered from one monorepo. The first release was uploaded with a
+one-time account-scoped API token (`uv build` per package + `uv publish`),
+split across two days because PyPI rate-limits new-project creation
+(~4/day observed). The token was revoked immediately after, and per-project
+trusted publishers were added once the projects existed — identical configs
+across *existing* projects are allowed.
 
-4. **Revoke the token immediately**, then wire up trusted publishing for
-   every future release: on each of the six project pages → Settings →
-   Publishing → *Add a new publisher* (GitHub):
-   - Owner: `Inceptium-ai`  ·  Repository: `tabella`
-   - Workflow name: `release.yml`  ·  Environment: `pypi`
-
-   (Identical configs across *existing* projects are fine — the uniqueness
-   rule applies only to pending publishers.)
-5. On GitHub → repo → Settings → Environments, create an environment named
-   `pypi` (optionally with required reviewers as a release gate).
+</details>
 
 Note: the bare name `tabella` on PyPI belongs to an unrelated project (an
 Open-RPC docs tool). Our install entry point is `pip install tabella-cli`;
@@ -52,7 +41,8 @@ the console command is still `tabella`.
    ```
 
 3. The `Release` workflow lints, tests, builds all six packages, and publishes
-   them to PyPI. Verify at `https://pypi.org/project/tabella-cli/`.
+   them to PyPI via trusted publishing. Verify at
+   `https://pypi.org/project/tabella-cli/`.
 
 ## Verifying locally before tagging
 
