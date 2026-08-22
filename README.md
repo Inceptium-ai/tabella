@@ -142,6 +142,10 @@ the specs in this repo. No lock-in.
 - [ ] **M3** — AWS reference deployment: Terraform
 - [ ] **M4** — Docs site, trademark + domain clearance for Tabella, launch
 
+Beyond the milestones: spec v0.2 proposals (asset groups, stewardship &amp; SLA
+vocabulary, contract SLA) and the connector roadmap live in
+[docs/ROADMAP.md](docs/ROADMAP.md).
+
 ## License
 
 Apache-2.0. See [LICENSE](LICENSE).
