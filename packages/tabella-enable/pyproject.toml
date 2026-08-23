@@ -1,6 +1,6 @@
 [project]
 name = "tabella-enable"
-version = "0.1.0"
+version = "0.1.1"
 description = "Tabella AI-enablement: generated REST access layers, MCP tools + live MCP server, RAG vectorization and semantic search"
 readme = "README.md"
 requires-python = ">=3.11"

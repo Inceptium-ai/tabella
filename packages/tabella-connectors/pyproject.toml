@@ -1,6 +1,6 @@
 [project]
 name = "tabella-connectors"
-version = "0.1.0"
+version = "0.1.1"
 description = "Built-in Tabella connectors: sqlite, postgres, files/s3 (csv + parquet)"
 readme = "README.md"
 requires-python = ">=3.11"

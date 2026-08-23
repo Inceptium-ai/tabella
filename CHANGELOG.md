@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.1 — 2026-08-23
 
 - **Declared-schema registration**: connectors may declare
   `introspectable = False`; registration then derives the asset schema from
