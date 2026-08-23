@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- **Declared-schema registration**: connectors may declare
+  `introspectable = False`; registration then derives the asset schema from
+  the manifest's contract instead of introspecting the source — placeholder
+  catalog entries that still carry shape, ownership, and PII markings.
+- **api connector** (aliases `https`, `http`): registers API-backed assets as
+  placeholders — endpoint URI + native path recorded for cataloging; data
+  access stays with the source system.
+
 ## 0.1.0 — 2026-08-11
 
 Initial release of the Tabella open framework.

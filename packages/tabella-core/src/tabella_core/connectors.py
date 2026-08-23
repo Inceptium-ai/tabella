@@ -17,6 +17,10 @@ class FetchResult(NamedTuple):
 class Connector(ABC):
     scheme: ClassVar[str]
     aliases: ClassVar[tuple[str, ...]] = ()
+    #: False for placeholder-style sources (e.g. API endpoints) whose schema
+    #: cannot be read from the source itself. Registration then derives the
+    #: schema from the manifest's declared contract instead of introspecting.
+    introspectable: ClassVar[bool] = True
 
     def source_name(self, uri: str) -> str:
         """Default logical source name derived from the URI (last path segment,

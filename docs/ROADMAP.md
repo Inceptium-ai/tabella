@@ -101,7 +101,9 @@ location fields.
   `source.location` documents the real system.
 - **API assets** — treat REST/GraphQL endpoints as first-class assets
   (catalog hierarchy: service → collection → endpoint), extending the asset
-  model beyond tables and files.
+  model beyond tables and files. *Partially shipped (unreleased): the `api`
+  connector registers endpoint placeholders via declared-schema registration;
+  the service → collection → endpoint catalog hierarchy remains open.*
 
 ---
 

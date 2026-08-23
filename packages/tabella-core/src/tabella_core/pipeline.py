@@ -21,6 +21,8 @@ from tabella_core.models import (
     AssetMeta,
     AssetSchema,
     Classification,
+    FieldDef,
+    FieldType,
     OnboardingManifest,
     SourceRef,
     slug,
@@ -69,6 +71,23 @@ class RegistrationResult:
     governance_backends: list[str] = field(default_factory=list)
 
 
+def _schema_from_contract(manifest: OnboardingManifest) -> AssetSchema:
+    """Declared-schema registration: for non-introspectable sources the
+    contract IS the schema (a placeholder catalog entry that still knows its
+    shape, ownership, and PII surface)."""
+    return AssetSchema(
+        fields=[
+            FieldDef(
+                name=spec.name,
+                type=spec.type or FieldType.unknown,
+                nullable=not spec.required,
+                pii=spec.pii,
+            )
+            for spec in manifest.contract.fields
+        ]
+    )
+
+
 def register(
     manifest: OnboardingManifest,
     catalog_dir: str | Path,
@@ -77,12 +96,14 @@ def register(
     governance_backends: list[GovernanceBackend] | None = None,
 ) -> RegistrationResult:
     connector = get_connector(manifest.source.connector)
-    schema = connector.introspect(manifest.source.uri, manifest.source.native_name)
-
-    problems = _verify_contract(manifest, schema)
-    if problems:
-        raise ContractViolation(manifest.asset_id, problems)
-    _apply_contract_metadata(manifest, schema)
+    if connector.introspectable:
+        schema = connector.introspect(manifest.source.uri, manifest.source.native_name)
+        problems = _verify_contract(manifest, schema)
+        if problems:
+            raise ContractViolation(manifest.asset_id, problems)
+        _apply_contract_metadata(manifest, schema)
+    else:
+        schema = _schema_from_contract(manifest)
 
     descriptor = AssetDescriptor(
         id=manifest.asset_id,

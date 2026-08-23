@@ -103,7 +103,7 @@ Everything interoperates through five small specs in [`spec/`](spec/):
 spec/                  The open standards + JSON Schemas
 packages/
   tabella-core/           Spec models, connector SDK, backend interfaces, registration pipeline
-  tabella-connectors/     Built-in connectors: sqlite, postgres, files/s3 (csv + parquet)
+  tabella-connectors/     Built-in connectors: sqlite, postgres, files/s3 (csv + parquet), api (placeholders)
   tabella-catalog-om/     OpenMetadata catalog backend (M1)
   tabella-governance-aws/ AWS Glue + Lake Formation governance backend (M3)
   tabella-enable/         Generators: REST access layer, MCP tools (RAG + MCP server in M2)

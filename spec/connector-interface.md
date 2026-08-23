@@ -18,6 +18,10 @@ A connector registers under a URI **scheme** (`sqlite`, `postgres`, `s3`).
 ```python
 class Connector(ABC):
     scheme: ClassVar[str]
+    # False => declared-schema registration: the source cannot be introspected
+    # (e.g. an API endpoint); the pipeline derives the asset schema from the
+    # manifest's contract and skips live contract verification.
+    introspectable: ClassVar[bool] = True
 
     def list_assets(self, uri: str) -> list[str]:
         """Native names of assets at `uri` (tables, prefixes, files)."""
