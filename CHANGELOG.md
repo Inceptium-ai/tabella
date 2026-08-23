@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.2 — 2026-08-23
 
 - **Vocabulary registration API** on the OpenMetadata backend:
   `ensure_tags()` (classification + tags, createOrUpdate) and
