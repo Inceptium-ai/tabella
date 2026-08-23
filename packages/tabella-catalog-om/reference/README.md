@@ -41,6 +41,16 @@ typically from Glue):
 | Enrich table | `PATCH /api/v1/tables/{id}` (`application/json-patch+json`: tags, domains, description, extension, per-column PII tags) |
 | Upsert contract | `PUT /api/v1/dataContracts` (`entity` ref needs the table id) |
 
+**Vocabulary registration** (governance registry → OM; properties must exist
+on the entity type before `extension` patches may carry them):
+
+| Call | Endpoint |
+|---|---|
+| Ensure classification/tags | `PUT /api/v1/classifications`, `PUT /api/v1/tags` |
+| Resolve entity type id | `GET /api/v1/metadata/types/name/{entityType}?category=entityType` |
+| Resolve field type id | `GET /api/v1/metadata/types/name/{string\|enum}?category=field` |
+| Register custom property | `PUT /api/v1/metadata/types/{entityTypeId}` (createCustomProperty: `name`, `propertyType` ref; `customPropertyConfig.config.values` for enum) |
+
 ## Shapes that drive the mapping
 
 - `createTable` requires `name`, `columns[]`, `databaseSchema` (FQN), and
@@ -65,4 +75,6 @@ HTTP transport. Live validation happens when the `deploy/sandbox` stack lands
 (tracked in M1 follow-up). Items only a live server can confirm: databaseService
 serviceType enum values, custom-property type definitions required before
 `extension` PATCHes are accepted, the exact ingestionPipelines trigger route,
-and JSON Patch validation details (tagLabel required fields).
+JSON Patch validation details (tagLabel required fields), and the
+custom-property registration route/payload (`metadata/types` ids + enum
+`customPropertyConfig` shape).

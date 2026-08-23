@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- **Vocabulary registration API** on the OpenMetadata backend:
+  `ensure_tags()` (classification + tags, createOrUpdate) and
+  `register_custom_properties()` (custom properties on entity types, text →
+  string / select → enum with config values) — OM requires both to be
+  pre-registered before tagLabels or `extension` patches may reference them.
+
 ## 0.1.1 — 2026-08-23
 
 - **Declared-schema registration**: connectors may declare

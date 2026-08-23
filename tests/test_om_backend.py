@@ -58,6 +58,9 @@ class Recorder:
             )
         if request.method == "GET" and "/v1/services/ingestionPipelines/name/" in path:
             return httpx.Response(200, json={"id": "pipe-1"})
+        if request.method == "GET" and "/v1/metadata/types/name/" in path:
+            type_name = path.rsplit("/", 1)[-1]
+            return httpx.Response(200, json={"id": f"type-{type_name}", "name": type_name})
         entity_id = DOMAIN_ID if path.endswith("/v1/domains") else TABLE_ID
         payload = body if isinstance(body, dict) else {}
         return httpx.Response(200, json={"id": entity_id, **payload})
@@ -176,3 +179,61 @@ def test_http_errors_surface_clearly(tmp_path, customers_manifest):
     )
     with pytest.raises(OpenMetadataError, match="401"):
         OpenMetadataCatalog(client, _settings()).upsert_asset(descriptor)
+
+
+# ---------- vocabulary registration (governance registry -> OM) ----------
+
+
+def _catalog(recorder):
+    client = OpenMetadataClient(
+        host="http://om.test", token="t", transport=httpx.MockTransport(recorder)
+    )
+    return OpenMetadataCatalog(client, _settings(), sleep=lambda s: None)
+
+
+def test_ensure_tags_creates_classification_then_tags():
+    recorder = Recorder()
+    _catalog(recorder).ensure_tags(["phi", "cui"])
+    assert recorder.paths() == ["/api/v1/classifications", "/api/v1/tags", "/api/v1/tags"]
+    (classification,) = recorder.by_path("/api/v1/classifications")
+    assert classification["name"] == "Tabella"
+    tag_bodies = recorder.by_path("/api/v1/tags")
+    assert [t["name"] for t in tag_bodies] == ["phi", "cui"]
+    assert all(t["classification"] == "Tabella" for t in tag_bodies)
+
+
+def test_register_custom_properties_text_and_select():
+    recorder = Recorder()
+    _catalog(recorder).register_custom_properties(
+        "table",
+        [
+            {"name": "steward", "kind": "text", "description": "Steward email"},
+            {"name": "phi_category", "kind": "select", "options": ["demographic", "medical"]},
+        ],
+    )
+    paths = recorder.paths()
+    # entity type resolved once, each field type resolved once, one PUT per property
+    assert paths.count("/api/v1/metadata/types/name/table") == 1
+    assert paths.count("/api/v1/metadata/types/name/string") == 1
+    assert paths.count("/api/v1/metadata/types/name/enum") == 1
+    puts = recorder.by_path("/api/v1/metadata/types/type-table")
+    assert len(puts) == 2
+    text_prop, select_prop = puts
+    assert text_prop["name"] == "steward"
+    assert text_prop["description"] == "Steward email"
+    assert text_prop["propertyType"] == {"id": "type-string", "type": "type"}
+    assert select_prop["propertyType"] == {"id": "type-enum", "type": "type"}
+    assert select_prop["customPropertyConfig"]["config"] == {
+        "values": ["demographic", "medical"],
+        "multiSelect": False,
+    }
+
+
+def test_register_custom_properties_caches_type_ids():
+    recorder = Recorder()
+    _catalog(recorder).register_custom_properties(
+        "domain",
+        [{"name": "a", "kind": "text"}, {"name": "b", "kind": "text"}],
+    )
+    assert recorder.paths().count("/api/v1/metadata/types/name/string") == 1
+    assert len(recorder.by_path("/api/v1/metadata/types/type-domain")) == 2

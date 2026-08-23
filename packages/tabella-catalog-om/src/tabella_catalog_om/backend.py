@@ -54,6 +54,68 @@ class OpenMetadataCatalog(CatalogBackend):
             table = self._provision_ingest(descriptor)
         self._enrich(descriptor, table)
 
+    # ---------- vocabulary registration (governance registry -> OM) ----------
+    # OM only accepts pre-registered metadata: a tag must exist in a
+    # classification before a tagLabel can reference it, and a custom property
+    # must be registered on the entity type before an /extension patch may
+    # carry it (an unknown property 400s the whole all-or-nothing patch).
+
+    def ensure_tags(
+        self, tags: list[str], *, classification: str = mapping.TABELLA_CLASSIFICATION
+    ) -> None:
+        """Create/refresh a classification and its tags (createOrUpdate)."""
+        self.client.put(
+            "/v1/classifications",
+            {"name": classification, "description": "Tags managed by Tabella"},
+        )
+        for tag in tags:
+            self.client.put(
+                "/v1/tags",
+                {
+                    "classification": classification,
+                    "name": tag,
+                    "description": f"Tabella tag '{tag}'",
+                },
+            )
+
+    def register_custom_properties(self, entity_type: str, properties: list[dict]) -> None:
+        """Register custom properties on an OM entity type (table,
+        databaseSchema, domain, ...).
+
+        Each property: {"name": str, "kind": "text"|"select",
+                        "options": [...] (select only), "description": str?}.
+        Registration is additive on OM's side — existing properties are
+        updated, never removed here.
+        """
+        entity = self.client.get(
+            f"/v1/metadata/types/name/{quote(entity_type)}", params={"category": "entityType"}
+        )
+        type_ids: dict[str, str] = {}
+
+        def field_type_id(om_type: str) -> str:
+            if om_type not in type_ids:
+                found = self.client.get(
+                    f"/v1/metadata/types/name/{om_type}", params={"category": "field"}
+                )
+                type_ids[om_type] = found["id"]
+            return type_ids[om_type]
+
+        for prop in properties:
+            select = prop.get("kind") == "select"
+            payload: dict = {
+                "name": prop["name"],
+                "description": prop.get("description") or f"Tabella property '{prop['name']}'",
+                "propertyType": {
+                    "id": field_type_id("enum" if select else "string"),
+                    "type": "type",
+                },
+            }
+            if select:
+                payload["customPropertyConfig"] = {
+                    "config": {"values": list(prop.get("options") or []), "multiSelect": False}
+                }
+            self.client.put(f"/v1/metadata/types/{entity['id']}", payload)
+
     # ---------- provisioning ----------
 
     def _provision_direct(self, descriptor: AssetDescriptor) -> dict:
