@@ -136,10 +136,13 @@ the specs in this repo. No lock-in.
   server (`tabella mcp`, stdio)
 - [x] **v0.1.0 published** — all six packages on PyPI with automated,
   tokenless releases (tag-triggered trusted publishing)
-- [ ] **Live validation batch** — sandbox stack + AWS: OpenMetadata, Postgres,
-  Glue/Lake Formation, pgvector, `tabella init` (deferred to one deploy window
-  to minimize cloud cost)
-- [ ] **M3** — AWS reference deployment: Terraform
+- [x] **M3 (code)** — AWS reference deployment authored: Terraform stack
+  (S3 manifest intake → containerized registrar Lambda → Glue/OM →
+  descriptors back to S3), `tabella init` sandbox bootstrap (OpenMetadata +
+  pgvector + MinIO compose)
+- [ ] **Live validation batch** — one deploy window: `tofu apply` the
+  reference stack + sandbox against real OpenMetadata, Glue, pgvector
+  (deferred to minimize cloud cost)
 - [ ] **M4** — Docs site, trademark + domain clearance for Tabella, launch
 
 Beyond the milestones: spec v0.2 proposals (asset groups, stewardship &amp; SLA

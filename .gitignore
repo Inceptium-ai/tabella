@@ -16,3 +16,4 @@ examples/quickstart/retail.db
 
 .DS_Store
 .env
+.terraform/

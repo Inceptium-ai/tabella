@@ -1,7 +1,4 @@
-"""The `tabella` CLI: register, discover, validate, serve, tools, vectorize, mcp.
-
-`init` (sandbox bootstrap) arrives with the live-validation milestone.
-"""
+"""The `tabella` CLI: init, register, discover, validate, serve, tools, vectorize, mcp."""
 
 from __future__ import annotations
 
@@ -123,6 +120,12 @@ def _cmd_vectorize(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_init(args: argparse.Namespace) -> int:
+    from tabella_cli.sandbox import init_sandbox
+
+    return init_sandbox(args.directory, start=not args.no_start)
+
+
 def _cmd_mcp(args: argparse.Namespace) -> int:
     import asyncio
 
@@ -210,6 +213,18 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("assets", nargs="*", help="Asset ids to vectorize (default: all enabled)")
     p.add_argument("-o", "--output", help="Write the RAG index manifest to a file")
     p.set_defaults(func=_cmd_vectorize)
+
+    p = sub.add_parser(
+        "init",
+        help="Bootstrap the local sandbox (OpenMetadata + pgvector Postgres + MinIO)",
+    )
+    p.add_argument(
+        "directory", nargs="?", default="tabella-sandbox", help="Target directory"
+    )
+    p.add_argument(
+        "--no-start", action="store_true", help="Write the compose files without starting"
+    )
+    p.set_defaults(func=_cmd_init)
 
     p = sub.add_parser("mcp", help="Serve the catalog as a live MCP server (stdio)")
     p.add_argument("catalog", help="Catalog directory")

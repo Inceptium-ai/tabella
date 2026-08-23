@@ -6,6 +6,15 @@ on:
   pull_request:
 
 jobs:
+  iac:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: opentofu/setup-opentofu@v1
+      - run: tofu fmt -check -recursive deploy/aws
+      - run: tofu -chdir=deploy/aws init -backend=false
+      - run: tofu -chdir=deploy/aws validate
+
   test:
     runs-on: ubuntu-latest
     strategy:

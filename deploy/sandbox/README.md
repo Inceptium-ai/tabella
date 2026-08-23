@@ -1,9 +1,14 @@
-# Local sandbox (M1)
+# Local sandbox
 
-A docker-compose stack for local end-to-end development:
+Bootstrap with the CLI — it writes and starts the full local stack
+(OpenMetadata + MySQL + OpenSearch, Postgres with pgvector, MinIO):
 
-- **OpenMetadata** (+ its MySQL/Elasticsearch dependencies) — catalog backend
-- **PostgreSQL** — a real source to register (with pgvector for M2 RAG)
-- **MinIO** — S3-compatible object storage for the files connector
+```bash
+tabella init            # writes ./tabella-sandbox/ and runs docker compose up -d
+tabella init --no-start # just write the files
+```
 
-`tabella init` will bootstrap this stack and point the CLI at it. Lands in M1.
+Endpoints, credentials, and the env vars to wire Tabella against it are
+printed on start (OpenMetadata takes a few minutes on first boot). Image tags
+are pinned in the generated `.env` and get final verification during the
+consolidated AWS/live validation window.
