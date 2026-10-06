@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.3 — 2026-10-06
 
 - **Auto-classification** (`tabella_core.classify` + `tabella classify`):
   suggest per-field PII flags, semantic tags, and an asset sensitivity
