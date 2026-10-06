@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- **Auto-classification** (`tabella_core.classify` + `tabella classify`):
+  suggest per-field PII flags, semantic tags, and an asset sensitivity
+  classification from field-name heuristics plus sampled content (via the
+  asset's connector). Ships a dependency-free regex/Luhn content analyzer;
+  installing `presidio-analyzer` (MIT) upgrades detection to NER-grade
+  behind the same interface. Suggestions are explicit (`--apply` /
+  `apply_suggestions`) — never silent writes; classification is never
+  loosened.
+
 ## 0.1.2 — 2026-08-23
 
 - **Vocabulary registration API** on the OpenMetadata backend:

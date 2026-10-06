@@ -72,6 +72,50 @@ def _cmd_validate(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_classify(args: argparse.Namespace) -> int:
+    from tabella_core.classify import apply_suggestions, classify_asset
+    from tabella_core.store import save_descriptor
+
+    catalog = load_catalog(args.catalog)
+    if args.asset:
+        catalog = [d for d in catalog if d.id == args.asset]
+        if not catalog:
+            print(f"error: no asset '{args.asset}' in {args.catalog}", file=sys.stderr)
+            return 1
+
+    changed = 0
+    for descriptor in catalog:
+        result = classify_asset(
+            descriptor, sample_size=args.sample_size, sample_content=not args.names_only
+        )
+        if not result.fields and result.suggested_classification is None:
+            continue
+        print(f"{descriptor.id} (sampled {result.sampled_rows} row(s)):")
+        for suggestion in result.fields:
+            flags = []
+            if suggestion.pii:
+                flags.append("PII")
+            sources = sorted({e["source"] for e in suggestion.evidence})
+            print(
+                f"  {suggestion.field}: {', '.join(suggestion.tags)}"
+                f" [{' '.join(flags) or 'tag only'}; via {'/'.join(sources)}]"
+            )
+        if result.suggested_classification is not None:
+            print(
+                f"  classification: {descriptor.classification.value}"
+                f" -> {result.suggested_classification.value}"
+            )
+        if args.apply:
+            apply_suggestions(descriptor, result)
+            save_descriptor(descriptor, args.catalog)
+            changed += 1
+    if args.apply:
+        print(f"applied suggestions to {changed} descriptor(s)")
+    else:
+        print("(suggestions only — re-run with --apply to write them)")
+    return 0
+
+
 def _search_service():
     from tabella_enable.rag import (
         SearchService,
@@ -188,6 +232,18 @@ def main(argv: list[str] | None = None) -> int:
     )
     p.set_defaults(func=_cmd_discover)
 
+    p = sub.add_parser(
+        "classify",
+        help="Suggest PII flags / semantic tags / classification from field names "
+        "and sampled content (install presidio-analyzer for NER-grade detection)",
+    )
+    p.add_argument("catalog", help="Catalog directory")
+    p.add_argument("--asset", help="Classify one asset id only")
+    p.add_argument("--sample-size", type=int, default=50)
+    p.add_argument("--names-only", action="store_true", help="Skip content sampling")
+    p.add_argument("--apply", action="store_true", help="Write suggestions to descriptors")
+    p.set_defaults(func=_cmd_classify)
+
     p = sub.add_parser("validate", help="Validate every descriptor in a catalog")
     p.add_argument("catalog", help="Catalog directory")
     p.set_defaults(func=_cmd_validate)
@@ -218,9 +274,7 @@ def main(argv: list[str] | None = None) -> int:
         "init",
         help="Bootstrap the local sandbox (OpenMetadata + pgvector Postgres + MinIO)",
     )
-    p.add_argument(
-        "directory", nargs="?", default="tabella-sandbox", help="Target directory"
-    )
+    p.add_argument("directory", nargs="?", default="tabella-sandbox", help="Target directory")
     p.add_argument(
         "--no-start", action="store_true", help="Write the compose files without starting"
     )

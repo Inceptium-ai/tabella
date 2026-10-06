@@ -59,7 +59,10 @@ enablement:
 `tabella register` then introspects the source, **verifies the contract** (a
 declared-but-missing field fails registration with a violation report),
 produces a portable **Asset Descriptor**, mirrors it into the catalog and
-governance backends, and generates the enablement artifacts. Everything
+governance backends, and generates the enablement artifacts. `tabella
+classify` suggests PII flags, semantic tags, and a sensitivity
+classification from field names and sampled content (built-in regex/Luhn
+detection; install `presidio-analyzer` for NER-grade). Everything
 downstream is derived and regenerable; PII markings flow into the catalog and
 out of AI tool filters automatically.
 
